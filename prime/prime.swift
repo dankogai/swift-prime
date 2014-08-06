@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Dan Kogai. All rights reserved.
 //
 extension UInt {
-    class Prime {}
     static func powmod(var b:UInt, var _ p:UInt, _ m:UInt)->UInt {
         if b > 0x7FFFffff || p > 0x7FFFffff || m > 0x7FFFffff {
             return UInt(c_powmod(UInt64(b), UInt64(p), UInt64(m)))
@@ -19,6 +18,24 @@ extension UInt {
             return r
         }
     }
+    static func gcd(m:UInt, _ n:UInt)->UInt {
+        if m < n { return gcd(n, m) }
+        let r = m % n
+        return r == 0 ? n : gcd(n, r)
+    }
+}
+extension Int {
+    static func gcd(m:Int, _ n:Int)->Int {
+        if m < 0 {
+            return gcd(-m, n < 0 ? -n : n)
+        }
+        if m < n { return gcd(n, m) }
+        let r = m % n
+        return r == 0 ? n : gcd(n, r)
+    }
+}
+extension UInt {
+    class Prime {}
 }
 extension UInt.Prime {
     class var smallPrimes:[UInt] {

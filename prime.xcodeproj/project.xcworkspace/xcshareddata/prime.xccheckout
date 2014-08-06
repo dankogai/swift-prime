@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>B88797C8-8984-4844-9D6F-017D5D96E582</string>
+	<key>IDESourceControlProjectName</key>
+	<string>prime</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0EEA3AF349DD58B60E61885FBFB6C807FF9944AC</key>
+		<string>https://github.com/dankogai/swift-prime.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>prime.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0EEA3AF349DD58B60E61885FBFB6C807FF9944AC</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/dankogai/swift-prime.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0EEA3AF349DD58B60E61885FBFB6C807FF9944AC</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0EEA3AF349DD58B60E61885FBFB6C807FF9944AC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>swift-prime</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -5,15 +5,26 @@
 //  Created by Dan Kogai on 8/6/14.
 //  Copyright (c) 2014 Dan Kogai. All rights reserved.
 //
+infix operator => { associativity left precedence 95 }
+func => <A,R> (lhs:A, rhs:A->R)->R {
+    return rhs(lhs)
+}
 
-println(2.isPrime)
-println(42.isPrime)
-println(0x7FFFffff.isPrime)
-println(0.nextPrime)
-println(Int.max.prevPrime)
+2.isPrime           => println
+42.isPrime          => println
+0x7FFFffff.isPrime  => println
+0.nextPrime         => println
+Int.max.prevPrime   => println
 for p in Int.Prime() {
     if p > 10 { break }
     println(p)
 }
-println(Int.Prime.within(0..<100))
-println(Int.Prime.within(Int.max-100..<Int.max))
+Int.Prime.within(0..<100)               => println
+Int.Prime.within(Int.max-100..<Int.max) => println
+(UInt(65521*65537)*UInt(65521*65537)).primeFactors => println
+UInt.max.primeFactors   => println
+Int.max.primeFactors    => println
+// The follwing is commented out because they take seconds
+//(2147483629*2147483629).primeFactors => println
+//(2147483629*2147483629.prevPrime).primeFactors => println
+//3_369_738_766_071_892_021.primeFactors => println

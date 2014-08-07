@@ -19,9 +19,32 @@ extension UInt {
         }
     }
     static func gcd(m:UInt, _ n:UInt)->UInt {
+        if n == 0 { return m }
         if m < n { return gcd(n, m) }
         let r = m % n
         return r == 0 ? n : gcd(n, r)
+    }
+    static func isqrt(var n:UInt)->UInt {
+        if n == 0 { return 0 }
+        if n == 1 { return 1 }
+        if n == 18446744073709551615 { return 4294967295 }
+        var xk = n
+        do {
+            let xk1 = (xk + n / xk) / 2
+            if xk1 >= xk { return xk }
+            xk = xk1
+        } while true
+    }
+    static func icbrt(var n:UInt)->UInt {
+        if n == 0 { return 0 }
+        if n == 1 { return 1 }
+        if n == 18446744073709551615 { return 2642245 }
+        var xk = n
+        do {
+            let xk1 = (2*xk + n/xk/xk) / 3
+            if xk1 >= xk { return xk }
+            xk = xk1
+        } while true
     }
 }
 extension Int {
@@ -29,9 +52,13 @@ extension Int {
         if m < 0 {
             return gcd(-m, n < 0 ? -n : n)
         }
+        if n == 0 { return m }
         if m < n { return gcd(n, m) }
         let r = m % n
         return r == 0 ? n : gcd(n, r)
+    }
+    static func isqrt(var n:Int)->Int {
+        return Int(UInt.isqrt(UInt(n)))
     }
 }
 extension UInt {
@@ -42,7 +69,7 @@ extension UInt.Prime {
     struct Static {
         static let instance:[UInt] = {
             var ps:[UInt] = [2, 3]
-            for var n:UInt = 5; n <= 0x101; n += 2 {
+            for var n:UInt = 5; n <= 0x7f; n += 2 {
                 for p in ps {
                     if n % p == 0 { break }
                     if p * p > n  { ps.append(n); break }
@@ -118,6 +145,28 @@ extension UInt.Prime {
         }
         return result
     }
+    class func pbRho(n:UInt)->UInt {
+        return UInt(c_pbrho(UInt64(n)))
+    }
+    class func squfof(n:UInt)->UInt {
+        return UInt(c_squfof(UInt64(n)))
+    }
+    class func factor(var n:UInt)->[UInt] {
+        var result = [UInt]()
+        if n < 2 { return result }
+        if isPrime(n) { return [n] }
+        for p in smallPrimes {
+            while n % p == 0 { result.append(p); n /= p }
+            if n == 1 { return result }
+        }
+        var d = pbRho(n)
+        if d == 1 {
+            d = squfof(n)
+        }
+        result += factor(d) + factor(n/d)
+        result.sort(<)
+        return result
+    }
 }
 extension UInt.Prime : SequenceType {
     func generate()->GeneratorOf<UInt> {
@@ -136,6 +185,7 @@ extension UInt {
     var isPrime:Bool { return Prime.isPrime(self) }
     var nextPrime:UInt { return Prime.nextPrime(self) }
     var prevPrime:UInt { return Prime.prevPrime(self) }
+    var primeFactors:[UInt] { return Prime.factor(self) }
 }
 extension Int {
     var isPrime:Bool {
@@ -143,6 +193,10 @@ extension Int {
     }
     var nextPrime:Int { return Int(UInt(self).nextPrime) }
     var prevPrime:Int { return Int(UInt(self).prevPrime) }
+    var primeFactors:[Int] {
+        return UInt(self).primeFactors.map{ Int($0) }
+    }
+
 }
 extension Int {
     class Prime {}

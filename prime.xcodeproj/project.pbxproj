@@ -64,8 +64,8 @@
 			children = (
 				9E966DD419919D6700953C55 /* main.swift */,
 				9E966DDF1991B72400953C55 /* prime.swift */,
-				9E966DDC19919FB500953C55 /* 128bit.c */,
 				9E966DDB19919FB500953C55 /* prime-Bridging-Header.h */,
+				9E966DDC19919FB500953C55 /* 128bit.c */,
 			);
 			path = prime;
 			sourceTree = "<group>";
@@ -250,6 +250,7 @@
 				9E966DDA19919D6700953C55 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

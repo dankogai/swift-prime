@@ -21,9 +21,13 @@ for p in Int.Prime() {
 }
 Int.Prime.within(0..<100)               => println
 Int.Prime.within(Int.max-100..<Int.max) => println
-(UInt(65521*65537)*UInt(65521*65537)).primeFactors => println
+UInt.ipow(2,63).primeFactors.count => println
 UInt.max.primeFactors   => println
 Int.max.primeFactors    => println
+0x0123456789abcdef.primeFactors => println
+(0xfedeca9876543210 as UInt).primeFactors   => println
+11111111111111111.primeFactors => println
+(UInt(65521*65537)*UInt(65521*65537)).primeFactors => println
 // The follwing is commented out because they take seconds
 //(2147483629*2147483629).primeFactors => println
 //(2147483629*2147483629.prevPrime).primeFactors => println

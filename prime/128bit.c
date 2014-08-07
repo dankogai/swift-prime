@@ -39,6 +39,13 @@ uint64_t gcd(uint64_t m, uint64_t n){
     return r == 0 ? n : gcd(n, r);
 
 }
+uint64_t c_ipow(uint64_t b, uint64_t n) {
+    uint64_t result = 1;
+    for (; n > 0; n >>= 1, b *= b) {
+        if ((n & 1) == 1) { result *= b; }
+    }
+    return result;
+}
 uint64_t isqrt(uint64_t n) {
     if (n == 0) { return 0; }
     if (n == 1) { return 1; }
@@ -50,22 +57,24 @@ uint64_t isqrt(uint64_t n) {
         xk = xk1;
     } while(1);
 }
-// cf. http://idm.s9.xrea.com/factorization/rho.html
 uint64_t c_pbrho(uint64_t n) {
     uint64_t x = 3, y = 2, q = 1, c = 1, d = 1;
+    uint64_t imax = isqrt(n);
     int i, j;
-    for (i = 1, j = 2; d == 1; i++) {
+    for (i = 1, j = 2; i < imax; i++) {
         x  = c_sqaddmod(x, c, n);
         q *= x < y ? y - x : x - y; q %= n;
         d = gcd(n, q);
+        if (d != 1) {
+            return d == n ? 1 : d;
+        }
         if (i % j == 0) {
             y = x;
             j += j;
         }
     }
-    return d == n ? 1 : d;
+    return 1;
 }
-// cf. http://www.frenchfries.net/paul/factoring/source.html
 uint64_t c_squfof(uint64_t n) {
     uint64_t k = isqrt(n);
     if (k * k == n) return k;

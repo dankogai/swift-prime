@@ -24,6 +24,14 @@ extension UInt {
         let r = m % n
         return r == 0 ? n : gcd(n, r)
     }
+    static func ipow(var b:UInt, var _ n:UInt)->UInt {
+        return UInt(c_ipow(UInt64(b), UInt64(n)))
+//        var result:UInt = 1
+//        for ; n > 0; n >>= 1, b *= b {
+//            if n & 1 == 1 { result *= b }
+//        }
+//        return result
+    }
     static func isqrt(var n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
@@ -57,7 +65,10 @@ extension Int {
         let r = m % n
         return r == 0 ? n : gcd(n, r)
     }
-    static func isqrt(var n:Int)->Int {
+    static func ipow(b:Int, _ n:Int)->Int {
+        return Int(UInt.ipow(UInt(b), UInt(n)))
+    }
+    static func isqrt(n:Int)->Int {
         return Int(UInt.isqrt(UInt(n)))
     }
 }
@@ -65,21 +76,6 @@ extension UInt {
     class Prime {}
 }
 extension UInt.Prime {
-    class var smallPrimes:[UInt] {
-    struct Static {
-        static let instance:[UInt] = {
-            var ps:[UInt] = [2, 3]
-            for var n:UInt = 5; n <= 0x7f; n += 2 {
-                for p in ps {
-                    if n % p == 0 { break }
-                    if p * p > n  { ps.append(n); break }
-                }
-            }
-            return ps
-            }()
-        }
-        return Static.instance
-    }
     class func mrTest(n:UInt, base:UInt)->Bool {
         if n > 0x7FFFffff || base > 0x7FFFffff {
             return c_mrtest(UInt64(n), UInt64(base)) != 0
@@ -115,10 +111,6 @@ extension UInt.Prime {
     class func isPrime(n:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
-        for p in smallPrimes {
-            if n % p == 0 { return false }
-            if p * p > n  { return true }
-        }
         for b in mrBases(n) {
             if mrTest(n, base:b) == false { return false }
         }
@@ -155,10 +147,6 @@ extension UInt.Prime {
         var result = [UInt]()
         if n < 2 { return result }
         if isPrime(n) { return [n] }
-        for p in smallPrimes {
-            while n % p == 0 { result.append(p); n /= p }
-            if n == 1 { return result }
-        }
         var d = pbRho(n)
         if d == 1 {
             d = squfof(n)

@@ -69,13 +69,28 @@ extension Int {
         return Int(UInt.ipow(UInt(b), UInt(n)))
     }
     static func isqrt(n:Int)->Int {
-        return Int(UInt.isqrt(UInt(n)))
+       return Int(UInt.isqrt(UInt(n)))
     }
 }
 extension UInt {
     class Prime {}
 }
 extension UInt.Prime {
+    class var smallPrimes:[UInt] {
+    struct Static {
+        static let instance:[UInt] = {
+            var ps:[UInt] = [2, 3]
+            for var n:UInt = 5; n <= 2011; n += 2 {
+                for p in ps {
+                    if n % p == 0 { break }
+                    if p * p > n  { ps.append(n); break }
+                }
+            }
+            return ps
+            }()
+        }
+        return Static.instance
+    }
     class func mrTest(n:UInt, base:UInt)->Bool {
         if n > 0x7FFFffff || base > 0x7FFFffff {
             return c_mrtest(UInt64(n), UInt64(base)) != 0
@@ -111,6 +126,9 @@ extension UInt.Prime {
     class func isPrime(n:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
+        if n % 3 == 0 { return n == 3 }
+        if n % 5 == 0 { return n == 5 }
+        if n % 7 == 0 { return n == 7 }
         for b in mrBases(n) {
             if mrTest(n, base:b) == false { return false }
         }
@@ -137,21 +155,37 @@ extension UInt.Prime {
         }
         return result
     }
-    class func pbRho(n:UInt)->UInt {
-        return UInt(c_pbrho(UInt64(n)))
+    class func pbRho(n:UInt, _ l:UInt, _ c:Int)->UInt {
+        return UInt(c_pbrho(UInt64(n), UInt64(l), Int32(c)))
     }
+    // cf. http://en.wikipedia.org/wiki/Shanks'_square_forms_factorization
+    // https://github.com/danaj/Math-Prime-Util/blob/master/factor.c
     class func squfof(n:UInt)->UInt {
-        return UInt(c_squfof(UInt64(n)))
-    }
-    class func factor(var n:UInt)->[UInt] {
-        var result = [UInt]()
-        if n < 2 { return result }
-        if isPrime(n) { return [n] }
-        var d = pbRho(n)
-        if d == 1 {
-            d = squfof(n)
+        let ks:[UInt64] = [
+            3*5*7*11, 3*5*7, 3*5*11, 3*5, 3*7*11, 3*7, 5*7*11, 5*7,
+            3*11,     3,     5*11,   5,   7*11,   7,   11,     1
+        ]
+        for k in ks {
+            let g = UInt(c_squfof(UInt64(n), k))
+            // println("squof(\(n),\(k)) == \(k)")
+            if g != 1 { return g }
         }
-        result += factor(d) + factor(n/d)
+        return 1
+    }
+    // factor n
+    // stratagy is akin to Math::Prime::Util
+    class func factor(var n:UInt)->[UInt] {
+        if n < 2 { return [n] }
+        if isPrime(n) { return [n] }
+        var result = [UInt]()
+        for p in smallPrimes {
+            while n % p == 0 { result.append(p); n /= p }
+            if n == 1 { return result }
+        }
+        if isPrime(n) { return result + [n] }
+        var d = squfof(n)
+        if d == 1 { return [0, n] }
+        result +=  factor(d) + factor(n/d)
         result.sort(<)
         return result
     }
@@ -182,7 +216,9 @@ extension Int {
     var nextPrime:Int { return Int(UInt(self).nextPrime) }
     var prevPrime:Int { return Int(UInt(self).prevPrime) }
     var primeFactors:[Int] {
-        return UInt(self).primeFactors.map{ Int($0) }
+        return self < 0
+            ? [-1] + UInt(-self).primeFactors.map{ Int($0) }
+            : UInt(self).primeFactors.map{ Int($0) }
     }
 
 }

@@ -21,14 +21,20 @@ for p in Int.Prime() {
 }
 Int.Prime.within(0..<100)               => println
 Int.Prime.within(Int.max-100..<Int.max) => println
+func printFactors(n:Int){println("\(n):\(n.primeFactors)")}
+(UInt.max, UInt.max.primeFactors)  => println
+-42 => printFactors
+Int.max                            => printFactors
 UInt.ipow(2,63).primeFactors.count => println
-UInt.max.primeFactors   => println
-Int.max.primeFactors    => println
-0x0123456789abcdef.primeFactors => println
-(0xfedeca9876543210 as UInt).primeFactors   => println
-11111111111111111.primeFactors => println
-(UInt(65521*65537)*UInt(65521*65537)).primeFactors => println
-// The follwing is commented out because they take seconds
-//(2147483629*2147483629).primeFactors => println
-//(2147483629*2147483629.prevPrime).primeFactors => println
-//3_369_738_766_071_892_021.primeFactors => println
+Int.Prime.within(2...47).reduce(1,*)    => printFactors
+0x0123456789abcdef              => printFactors
+let u = (0xfedeca9876543210 as UInt)
+(u, u.primeFactors)             => println
+1111111111111111                => printFactors
+let mp32 = 0x7fffFFFF.prevPrime
+mp32 * mp32.prevPrime       => printFactors
+3_369_738_766_071_892_021   => printFactors
+230584300921369391  => printFactors
+4611686018427387821 => printFactors
+// for i in Int.max/2-100..<Int.max/2 { i => printFactors}
+

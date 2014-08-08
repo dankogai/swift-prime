@@ -33,8 +33,20 @@ let u = (0xfedeca9876543210 as UInt)
 1111111111111111                => printFactors
 let mp32 = 0x7fffFFFF.prevPrime
 mp32 * mp32.prevPrime       => printFactors
-3_369_738_766_071_892_021   => printFactors
-230584300921369391  => printFactors
-4611686018427387821 => printFactors
-// for i in Int.max/2-100..<Int.max/2 { i => printFactors}
+//3_369_738_766_071_892_021   => printFactors
+//4611686018427387821  => printFactors
+func checkRange(r:Range<Int>) {
+    println("Checking \(r)...")
+    for i in r {
+        let fs = i.primeFactors
+        if (fs.reduce(1,*) != i) {
+            println("!!\(i):\(fs).reduce(1,*) != \(i)")
+        }
+        if fs[0] == 1 { i => printFactors }
+    }
+}
+checkRange(0x00000002...0x0000FFFF)
+checkRange(0x7fff0000...0x7fffFFFF)
+checkRange(0xffff0000...0xffffFFFF)
+// checkRange(0xFFFFffff0000...0xFFFFffffFFFF)
 

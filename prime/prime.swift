@@ -80,7 +80,7 @@ extension UInt.Prime {
     struct Static {
         static let instance:[UInt] = {
             var ps:[UInt] = [2, 3]
-            for var n:UInt = 5; n <= 2011; n += 2 {
+            for var n:UInt = 5; n < 2048; n += 2 {
                 for p in ps {
                     if n % p == 0 { break }
                     if p * p > n  { ps.append(n); break }
@@ -164,6 +164,13 @@ extension UInt.Prime {
         let ks:[UInt64] = [
             3*5*7*11, 3*5*7, 3*5*11, 3*5, 3*7*11, 3*7, 5*7*11, 5*7,
             3*11,     3,     5*11,   5,   7*11,   7,   11,     1
+//3*5*7*11, 3*5*7,  3*5*7*11*13, 3*5*7*13, 3*5*7*11*17, 3*5*11,
+//3*5*7*17, 3*5,    3*5*7*11*19, 3*5*11*13,3*5*7*19,    3*5*7*13*17,
+//3*5*13,   3*7*11, 3*7,         5*7*11,   3*7*13,      5*7,
+//3*5*17,   5*7*13, 3*5*19,      3*11,     3*7*17,      3,
+//3*11*13,  5*11,   3*7*19,      3*13,     5,           5*11*13,
+//5*7*19,   5*13,   7*11,        7,        3*17,        7*13,
+//11,       1
         ]
         for k in ks {
             let g = UInt(c_squfof(UInt64(n), k))
@@ -178,14 +185,29 @@ extension UInt.Prime {
         if n < 2 { return [n] }
         if isPrime(n) { return [n] }
         var result = [UInt]()
-        for p in smallPrimes {
+        for p in smallPrimes[0..<83] {
             while n % p == 0 { result.append(p); n /= p }
             if n == 1 { return result }
         }
         if isPrime(n) { return result + [n] }
+        if n < UInt(smallPrimes.last! * smallPrimes.last!) {
+            for p in smallPrimes[83..<smallPrimes.count] {
+                while n % p == 0 { result.append(p); n /= p }
+                if n < p  { break }
+            }
+            if n != 1 { result.append(n) }
+            return result
+        }
+        if isPrime(n) { return result + [n] }
         var d = squfof(n)
-        if d == 1 { return [0, n] }
-        result +=  factor(d) + factor(n/d)
+        if d == 1 {
+            let l = n < 0x7ffffFFFF ? UInt.isqrt(n) : 0x10000
+            for i in 2..<16 {
+                d = pbRho(n, l, Int(smallPrimes[i]))
+                if d != 1 { break }
+            }
+        }
+        result += d != 1 ? factor(d) + factor(n/d) : [1, n]
         result.sort(<)
         return result
     }
@@ -217,7 +239,7 @@ extension Int {
     var prevPrime:Int { return Int(UInt(self).prevPrime) }
     var primeFactors:[Int] {
         return self < 0
-            ? [-1] + UInt(-self).primeFactors.map{ Int($0) }
+            ? UInt(-self).primeFactors.map{ Int($0) } + [-1]
             : UInt(self).primeFactors.map{ Int($0) }
     }
 

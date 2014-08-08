@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 uint64_t c_powmod(uint64_t b64, uint64_t p64, uint64_t m64) {
     __uint128_t b128, r128;
     for (r128 = 1, b128 = b64; p64 > 0; p64 >>= 1) {
@@ -49,16 +50,16 @@ uint64_t c_ipow(uint64_t b, uint64_t n) {
 uint64_t isqrt(uint64_t n) {
     if (n == 0) { return 0; }
     if (n == 1) { return 1; }
-    if (n == 18446744073709551615ULL) { return 4294967295; }
-    uint64_t xk = n;
+    if (n == 0xffffffffffffffffULL) { return 0xffffffff; }
+    uint64_t x0 = n;
     do {
-        uint64_t xk1 = (xk + n / xk) / 2;
-        if (xk1 >= xk) { return xk; }
-        xk = xk1;
+        uint64_t x1 = (x0 + n / x0) / 2;
+        if (x1 >= x0) { return x0; }
+        x0 = x1;
     } while(1);
 }
 uint64_t c_pbrho(uint64_t n, uint64_t l, int c) {
-    uint64_t x = 2, y = 2, q = 1, d = 1;
+    uint64_t x = 2, y = 2, q = 1;
     if (c < 0) {
         c = -c;
         x = y = arc4random();
@@ -67,10 +68,8 @@ uint64_t c_pbrho(uint64_t n, uint64_t l, int c) {
     for (i = 1, j = 2; i < l; i++) {
         x  = c_sqaddmod(x, c, n);
         q *= x < y ? y - x : x - y; q %= n;
-        d = gcd(n, q);
-        if (d != 1) {
-            return d == n ? 1 : d;
-        }
+        uint64_t g = gcd(n, q);
+        if (1 < g && g < n) return g;
         if (i % j == 0) {
             y = x;
             j += j;
@@ -79,37 +78,39 @@ uint64_t c_pbrho(uint64_t n, uint64_t l, int c) {
     return 1;
 }
 uint64_t isqrt2(uint64_t n, uint64_t w) {
+    //return isqrt(n) * isqrt(w);
+    //return (uint64_t)sqrtl((long double)n * (long double)w);
     if (n == 0) { return 0; }
-    if (n == 1) { return 1; }
-    if (n == 18446744073709551615ULL) { return 4294967295; }
-    __uint128_t xk = n * w;
+    if (n == 1) { return isqrt(w); }
+    __uint128_t nw = n * w;
+    __uint128_t x0 = nw;
     do {
-        __uint128_t xk1 = (xk + n / xk) / 2;
-        if (xk1 >= xk) { return (uint64_t)xk; }
-        xk = xk1;
+        __uint128_t x1 = (x0 + nw / x0) / 2;
+        if (x1 >= x0) { return (uint64_t)x0; }
+        x0 = x1;
     } while(1);
 }
 #define knp2(k,n,p0) \
   (uint64_t)((__uint128_t)((k)*(n))-(__uint128_t)((p0)*(p0)))
-#define qh(q1) ((q1) & 1) == 0 ? (q1) >> 1 : (q1)
 uint64_t c_squfof(uint64_t n, uint64_t k) {
     if (n < 2)        { return 1; }
     if ((n & 1) == 0) { return 2; }
     uint64_t rnk = isqrt(n);
     if (rnk * rnk == n) return rnk;
     rnk = isqrt2(n, k);
-    int l = (int)isqrt(2*isqrt(n)), imax = 4 * l;
+    int l = (int)isqrt(2*isqrt(n));
     uint64_t p0, p1 = 0, q0, q1, q2, b, rq = 1;
     p0 = rnk, q0 = 1; q1 = knp2(k, n, p0);
     int i;
-    for (i = 1; i < imax; i++, p0 = p1, q0 = q1, q1 = q2) {
+    for (i = 1; i < 4 * l; i++, p0 = p1, q0 = q1, q1 = q2) {
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
         rq = isqrt(q2);
-        if (rq * rq == q2) break;
+        if (rq * rq == q2) goto stage2;
     }
-    if (i == imax) return 1;
+    return 1;
+stage2:
     b = (rnk - p1)/rq, p0 = b*rq + p1,
     q0 = rq, q1 = knp2(k, n, p0) / q0;
     for (i = 1; p0 != p1; i++, p0 = p1, q0 = q1, q1 = q2) {
@@ -117,5 +118,6 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
     }
-    return (q1 & 1) == 0 ? q1 >> 1 : q1;
+    uint64_t g = gcd(n, p0);
+    return g == n ? 1 : g;
 }

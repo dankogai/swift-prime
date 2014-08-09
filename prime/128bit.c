@@ -65,29 +65,16 @@ uint64_t c_pbrho(uint64_t n, uint64_t l, int c) {
         x = y = arc4random();
     }
     int i, j;
-    for (i = 1; i < l; i++) {
-        uint64_t savex = x;
+    for (i = 1, j = 2; i < l; i++) {
         x  = c_sqaddmod(x, c, n);
-        uint64_t q = x < y ? y - x : x - y;
-        for (j = 0; j < 64; j++) {
-            x  = c_sqaddmod(x, c, n);
-            q *= x < y ? y - x : x - y; q %= n;
+        uint64_t d = gcd(x < y ? y - x : x - y, n);
+        if (d != 1) {
+            return d == n ? 1 : d;
         }
-        uint64_t g = gcd(q, n);
-        if (g == 1) {
-            q = x;
+        if (i % j == 0) {
             y = x;
-            continue;
+            j += j;
         }
-        if (g == n) {
-            x = savex;
-            j = 64;
-            do {
-                x = c_sqaddmod(x, c, n);
-                g = gcd(x < y ? y - x : x - y, n);
-            } while (g == 1 && j-- != 0);
-        }
-        return g == n ? 1 : g;
     }
     return 1;
 }
@@ -122,6 +109,8 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
+        // skip trivial factors
+        if (q1 == 1) continue;
         if (q1 <= 2 * l) {
             if (q1 & 1) {
                 if (q1 <= l) qs[qi++] = q1;
@@ -131,6 +120,7 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
             if (qi == QLEN) return 1;
             continue;
         }
+        // perfect squware check every other iter
         if ((i & 1) == 0) continue;
         rq = isqrt(q2);
         if (rq * rq == q2) {
@@ -149,7 +139,7 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
     if (i == 4l) return 1;
     // stage2:
     b = (rnk - p1)/rq, p0 = b*rq + p1,
-    q0 = rq, q1 = knp2(k, n, p0) / q0;
+    q0 = rq, q1 = knp2(k, n, p0)/q0;
     while (1) {
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;

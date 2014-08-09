@@ -193,16 +193,16 @@ extension UInt.Prime {
         if n < UInt(smallPrimes.last! * smallPrimes.last!) {
             for p in smallPrimes[83..<smallPrimes.count] {
                 while n % p == 0 { result.append(p); n /= p }
-                if n < p  { break }
+                if n == 1 { return result }
             }
             if n != 1 { result.append(n) }
             return result
         }
         if isPrime(n) { return result + [n] }
-        var d = squfof(n)
+        let l = n < 0x7ffffFFFF ? UInt.isqrt(n) : 0x10000
+        var d = pbRho(n, l, 1)
         if d == 1 {
-            let l = n < 0x7ffffFFFF ? UInt.isqrt(n) : 0x10000
-            d = pbRho(n, l, 2)
+            d = squfof(n)
         }
         result += d != 1 ? factor(d) + factor(n/d) : [1, n]
         result.sort(<)

@@ -11,34 +11,18 @@
 extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.
-    static func mulmod(x:UInt64, _ y:UInt64, _ m:UInt64)->UInt64 {
+    static func mulmod(var a:UInt64, var _ b:UInt64, _ m:UInt64)->UInt64 {
         if (m == 0) { fatalError("modulo by zero") }
         if (m == 1) { return 1 }
-        let xt:(UInt64, UInt64) = (x >> 32, x & 0xFFFFffff)
-        let yt:(UInt64, UInt64) = (y >> 32, y & 0xFFFFffff)
-        var pt:(UInt64, UInt64,UInt64, UInt64) = (0, 0, 0, 0)
-        //        x0   x1
-        // *)     y0   y1
-        //  -------------
-        //      x0y1 x1y1
-        // x0y0 x1y0
-        pt.3 +=  xt.1 * yt.1
-        // pt.2 +=  xt.0 * yt.1 + xt.1 * yt.0 may overfow so...
-        let (x0y1, y1x0) = (xt.0 * yt.1, xt.1 * yt.0)
-        let x0y1_y1x0 = x0y1 &+ y1x0
-        if  x0y1_y1x0 < x0y1 { pt.0 += 1 }
-        pt.2 += x0y1_y1x0
-        pt.2 += pt.3 >> 32; pt.3 &= 0xFFFFffff // carry
-        pt.1 += xt.0 * yt.0
-        pt.1 += pt.2 >> 32; pt.2 &= 0xFFFFffff // carry
-        pt.0 += pt.1 >> 32; pt.1 &= 0xFFFFffff // carry
-        // println(pt)
-        //      -------------
-        // m0 m1) p0 p1 p2 p3
-        var r =  (pt.0 << 32 | pt.1)
-        r %= m; r = (r << 32 | pt.2)
-        r %= m; r = (r << 32 | pt.3)
-        return r % m;
+        var r:UInt64 = 0
+        if a > m { a %= m }
+        if b > m { b %= m }
+        while a > 0 {
+            if a & 1 == 1 { r = (r + b) % m }
+            a >>= 1
+            b = (b << 1) % m
+        }
+        return r
     }
 }
 extension UInt {

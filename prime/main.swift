@@ -12,14 +12,16 @@ func => <A,R> (lhs:A, rhs:A->R)->R {
 2.isPrime           => println
 42.isPrime          => println
 0x7FFFffff.isPrime  => println
+UInt.max.isPrime    => println
 0.nextPrime         => println
 Int.max.prevPrime   => println
-for p in Int.Prime() {
-    if p > 10 { break }
-    println(p)
-}
+//for p in Int.Prime() {
+//    if p > 10 { break }
+//    println(p)
+//}
 Int.Prime.within(0..<100)               => println
 Int.Prime.within(Int.max-100..<Int.max) => println
+//// factors
 func printFactors(n:Int){println("\(n):\(n.primeFactors)")}
 (UInt.max, UInt.max.primeFactors)  => println
 -42 => printFactors
@@ -31,26 +33,26 @@ let u = (0xfedeca9876543210 as UInt)
 (u, u.primeFactors)             => println
 1111111111111111                => printFactors
 let mp32 = 0x7fffFFFF.prevPrime
-//mp32 * mp32.prevPrime       => printFactors
-//3_369_738_766_071_892_021   => printFactors
+mp32 * mp32.prevPrime       => printFactors
+3_369_738_766_071_892_021   => printFactors
 // 4611686018427387821  => printFactors
-
-// for developer
-func checkRange(r:Range<Int>) {
-    let gauge = (r.endIndex - r.startIndex) / 256;
-    println("Checking \(r)")
-    for i in r {
-        let fs = i.primeFactors
-        if (fs.reduce(1,*) != i) {
-            println("!!\(i):\(fs).reduce(1,*) != \(i)")
-        }
-        if fs[0] == 1 { i => printFactors }
-        if i % gauge == 0 { print(".") }
-    }
-    println("Done.")
-}
-//checkRange(0x00000002...0x0000FFFF)
-//checkRange(0x7fff0000...0x7fffFFFF)
-//checkRange(0xffff0000...0xffffFFFF)
-//checkRange(0x0000ffffFFFFff00...0x0000ffffFFFFffff)
-//println(mulmod(0xffffFFFF,0xffffFFFF, 1))
+//// for developer
+//func checkRange(r:Range<Int>) {
+//    let gauge = (r.endIndex - r.startIndex) / 256;
+//    println("Checking \(r)")
+//    for i in r {
+//        let fs = i.primeFactors
+//        if (fs.reduce(1,*) != i) {
+//            println("!!\(i):\(fs).reduce(1,*) != \(i)")
+//        }
+//        if fs[0] == 1 { i => printFactors }
+//        if i % gauge == 0 { print(".") }
+//    }
+//    println("Done.")
+//}
+////checkRange(0x00000002...0x0000FFFF)
+////checkRange(0x7fff0000...0x7fffFFFF)
+////checkRange(0xffff0000...0xffffFFFF)
+////checkRange(0x0000ffffFFFFff00...0x0000ffffFFFFffff)
+//UInt.Prime.squfof_one(11111, 1) => println
+//UInt.Prime.squfof_one(3_369_738_766_071_892_021, 3*5*7) => println

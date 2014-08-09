@@ -5,6 +5,7 @@
 //  Created by Dan Kogai on 8/6/14.
 //  Copyright (c) 2014 Dan Kogai. All rights reserved.
 //
+import Darwin
 extension UInt {
     class Prime {}
 }
@@ -35,7 +36,7 @@ extension UInt.Prime {
             var t:UInt = d
             var y = UInt.powmod(base, t, n)
             while t != n-1 && y != 1 && y != n-1 {
-                y = (y * y) % n
+                y = UInt.mulmod(y, y, n)
                 t <<= 1
             }
             return y == n-1 || t & 1 == 1
@@ -88,13 +89,27 @@ extension UInt.Prime {
         }
         return result
     }
-    class func pbRho(n:UInt, _ l:UInt, _ c:Int)->UInt {
-        return UInt(c_pbrho(UInt64(n), UInt64(l), Int32(c)))
+    class func pbRho(n:UInt, _ l:UInt, _ c:UInt)->UInt {
+        //return UInt(c_pbrho(UInt64(n), UInt64(l), Int32(c)))
+        var x:UInt = 2, y:UInt = 2, j:UInt = 2
+        for i in 1...l {
+            x = UInt.mulmod(x, x, n)
+            x += c
+            let d  = UInt.gcd(x < y ? y - x : x - y, n);
+            if (d != 1) {
+                return d == n ? 1 : d
+            }
+            if (i % j == 0) {
+                y = x
+                j += j
+            }
+        }
+        return 1
     }
     // cf. http://en.wikipedia.org/wiki/Shanks'_square_forms_factorization
     // https://github.com/danaj/Math-Prime-Util/blob/master/factor.c
     class func squfof(n:UInt)->UInt {
-        let ks:[UInt64] = [
+        let ks:[UInt] = [
             3*5*7*11, 3*5*7, 3*5*11, 3*5, 3*7*11, 3*7, 5*7*11, 5*7,
             3*11,     3,     5*11,   5,   7*11,   7,   11,     1
 //3*5*7*11, 3*5*7,  3*5*7*11*13, 3*5*7*13, 3*5*7*11*17, 3*5*11,
@@ -106,11 +121,66 @@ extension UInt.Prime {
 //11,       1
         ]
         for k in ks {
-            let g = UInt(c_squfof(UInt64(n), k))
+            let g = UInt(c_squfof(UInt64(n), UInt64(k)))
+            //let g = squfof_one(n, k)
             // println("squof(\(n),\(k)) == \(k)")
             if g != 1 { return g }
         }
         return 1
+    }
+    class func squfof_one(n:UInt, _ k:UInt)->UInt {
+        if n < 2      { return 1 }
+        if n & 1 == 0 { return 2 }
+        let rn = UInt.isqrt(n)
+        if rn * rn == n { return rn }
+        let drnk = sqrt(Double(n) * Double(k))
+        let rnk = Int(drnk)
+        var p0, p1, q0, q1, q2, b, rq : Int
+        var qs = [Int]()
+        rq = 1;
+        p0 = rnk; p1 = 1; q0 = 1;
+        q1 = Int((drnk + Double(p0))*(drnk - Double(p0)))
+        let l = Int(UInt.isqrt(2 * UInt.isqrt(n)))
+        var i:Int
+        for i = 1; i < 4*l ; i++ {
+            if q1 == 1 { continue }
+            b = (rnk + p0) / q1
+            p1 = b * q1 - p0
+            q2 = q0 + b * (p0 - p1)
+            //println("p0=\(p0),q0=\(q0)q1=\(q1),q2=\(q2)")
+            // skip trivial factors
+            if q1 <= 2 * l {
+                if q1 & 1 == 1 {
+                    if q1 <= l { qs.append(q1) }
+                } else {
+                    qs.append(q1 >> 1)
+                }
+                continue;
+            }
+            // perfect squware check every other iter
+            if i & 1 == 0 { continue }
+            rq = Int.isqrt(q2);
+            if rq * rq == q2  && !contains(qs, rq) {
+                break
+            }
+            p0 = p1; q0 = q1; q1 = q2;
+        }
+        if i == 4*l { return 1 }
+        // stage2:
+        b = (rnk - p1)/rq; p0 = b*rq + p1;
+        q0 = rq;
+        q1 = Int((drnk + Double(p0))*(drnk - Double(p0)))/q0
+        while (true) {
+            b = (rnk + p0) / q1
+            p1 = b * q1 - p0
+            q2 = q0 + b * (p0 - p1)
+            if p0 == p1 { break }
+            p0 = p1; q0 = q1; q1 = q2
+        }
+        //printf("p0=%llu,q0=%llu,q1=%llu,q2=%llu\n",p0,q0,q1,q2);
+        let g = UInt.gcd(n, UInt(p0))
+        return g == n ? 1 : g;
+        //return ((q1 & 1) ? q1 : q1 >> 1);
     }
     // factor n
     // stratagy is akin to Math::Prime::Util

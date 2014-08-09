@@ -59,21 +59,35 @@ uint64_t isqrt(uint64_t n) {
     } while(1);
 }
 uint64_t c_pbrho(uint64_t n, uint64_t l, int c) {
-    uint64_t x = 2, y = 2, q = 1;
+    uint64_t x = 2, y = 2;
     if (c < 0) {
         c = -c;
         x = y = arc4random();
     }
     int i, j;
-    for (i = 1, j = 2; i < l; i++) {
+    for (i = 1; i < l; i++) {
+        uint64_t savex = x;
         x  = c_sqaddmod(x, c, n);
-        q *= x < y ? y - x : x - y; q %= n;
-        uint64_t g = gcd(n, q);
-        if (1 < g && g < n) return g;
-        if (i % j == 0) {
-            y = x;
-            j += j;
+        uint64_t q = x < y ? y - x : x - y;
+        for (j = 0; j < 64; j++) {
+            x  = c_sqaddmod(x, c, n);
+            q *= x < y ? y - x : x - y; q %= n;
         }
+        uint64_t g = gcd(q, n);
+        if (g == 1) {
+            q = x;
+            y = x;
+            continue;
+        }
+        if (g == n) {
+            x = savex;
+            j = 64;
+            do {
+                x = c_sqaddmod(x, c, n);
+                g = gcd(x < y ? y - x : x - y, n);
+            } while (g == 1 && j-- != 0);
+        }
+        return g == n ? 1 : g;
     }
     return 1;
 }
@@ -90,6 +104,7 @@ uint64_t isqrt2(uint64_t n, uint64_t w) {
         x0 = x1;
     } while(1);
 }
+#define QLEN 64
 #define knp2(k,n,p0) \
   (uint64_t)((__uint128_t)((k)*(n))-(__uint128_t)((p0)*(p0)))
 uint64_t c_squfof(uint64_t n, uint64_t k) {
@@ -101,23 +116,49 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
     int l = (int)isqrt(2*isqrt(n));
     uint64_t p0, p1 = 0, q0, q1, q2, b, rq = 1;
     p0 = rnk, q0 = 1; q1 = knp2(k, n, p0);
-    int i;
-    for (i = 1; i < 4 * l; i++, p0 = p1, q0 = q1, q1 = q2) {
+    uint64_t qs[QLEN];
+    int i, qi = 0;
+    for (i = 1; i < 4 * l; i++) {
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
+        if (q1 <= 2 * l) {
+            if (q1 & 1) {
+                if (q1 <= l) qs[qi++] = q1;
+            } else {
+                qs[qi++] = q1 >> 1;
+            }
+            if (qi == QLEN) return 1;
+            continue;
+        }
+        if ((i & 1) == 0) continue;
         rq = isqrt(q2);
-        if (rq * rq == q2) goto stage2;
+        if (rq * rq == q2) {
+            int j;
+            for (j = qi-1; j >= 0; j--) {
+                if (rq == qs[j]) {
+                    // printf("squfof:skip %llu\n", rq);
+                    goto stage1e;
+                }
+            }
+            break;
+        }
+    stage1e:
+        p0 = p1, q0 = q1, q1 = q2;
     }
-    return 1;
-stage2:
+    if (i == 4l) return 1;
+    // stage2:
     b = (rnk - p1)/rq, p0 = b*rq + p1,
     q0 = rq, q1 = knp2(k, n, p0) / q0;
-    for (i = 1; p0 != p1; i++, p0 = p1, q0 = q1, q1 = q2) {
+    while (1) {
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
+        if (p0 == p1) break;
+        p0 = p1, q0 = q1, q1 = q2;
     }
+    //printf("p0=%llu,q0=%llu,q1=%llu,q2=%llu\n",p0,q0,q1,q2);
     uint64_t g = gcd(n, p0);
     return g == n ? 1 : g;
+    //return ((q1 & 1) ? q1 : q1 >> 1);
 }

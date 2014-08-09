@@ -202,10 +202,7 @@ extension UInt.Prime {
         var d = squfof(n)
         if d == 1 {
             let l = n < 0x7ffffFFFF ? UInt.isqrt(n) : 0x10000
-            for i in 2..<16 {
-                d = pbRho(n, l, Int(smallPrimes[i]))
-                if d != 1 { break }
-            }
+            d = pbRho(n, l, 2)
         }
         result += d != 1 ? factor(d) + factor(n/d) : [1, n]
         result.sort(<)

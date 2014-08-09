@@ -92,7 +92,7 @@ uint64_t isqrt2(uint64_t n, uint64_t w) {
     } while(1);
 }
 #define QLEN 64
-#define knp2(k,n,p0) \
+#define KNP2(k,n,p0) \
   (uint64_t)((__uint128_t)((k)*(n))-(__uint128_t)((p0)*(p0)))
 uint64_t c_squfof(uint64_t n, uint64_t k) {
     if (n < 2)        { return 1; }
@@ -102,15 +102,15 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
     rnk = isqrt2(n, k);
     int l = (int)isqrt(2*isqrt(n));
     uint64_t p0, p1 = 0, q0, q1, q2, b, rq = 1;
-    p0 = rnk, q0 = 1; q1 = knp2(k, n, p0);
+    p0 = rnk, q0 = 1; q1 = KNP2(k, n, p0);
     uint64_t qs[QLEN];
     int i, qi = 0;
     for (i = 1; i < 4 * l; i++) {
+        if (q1 == 1) continue;
         b = (rnk + p0)/q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
         // skip trivial factors
-        if (q1 == 1) continue;
         if (q1 <= 2 * l) {
             if (q1 & 1) {
                 if (q1 <= l) qs[qi++] = q1;
@@ -139,9 +139,10 @@ uint64_t c_squfof(uint64_t n, uint64_t k) {
     if (i == 4l) return 1;
     // stage2:
     b = (rnk - p1)/rq, p0 = b*rq + p1,
-    q0 = rq, q1 = knp2(k, n, p0)/q0;
+    q0 = rq, q1 = KNP2(k, n, p0)/q0;
     while (1) {
         b = (rnk + p0)/q1;
+        // t = rnk + p0 - q1; b = 1; if (t > q1) b += t / q1;
         p1 = b*q1 - p0;
         q2 = q0 + b*(p0 - p1);
         if (p0 == p1) break;

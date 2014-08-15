@@ -12,17 +12,18 @@ extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.
     static func mulmod(var a:UInt64, var _ b:UInt64, _ m:UInt64)->UInt64 {
-        if (m == 0) { fatalError("modulo by zero") }
-        if (m == 1) { return 1 }
-        var r:UInt64 = 0
-        if a > m { a %= m }
-        if b > m { b %= m }
-        while a > 0 {
-            if a & 1 == 1 { r = (r + b) % m }
-            a >>= 1
-            b = (b << 1) % m
-        }
-        return r
+//        if (m == 0) { fatalError("modulo by zero") }
+//        if (m == 1) { return 1 }
+//        var r:UInt64 = 0
+//        if a > m { a %= m }
+//        if b > m { b %= m }
+//        while a > 0 {
+//            if a & 1 == 1 { r = (r + b) % m }
+//            a >>= 1
+//            b = (b << 1) % m
+//        }
+//        return r
+        return c_mulmod(a, b, m)
     }
 }
 extension UInt {

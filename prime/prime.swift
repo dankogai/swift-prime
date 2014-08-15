@@ -26,21 +26,17 @@ extension UInt.Prime {
         return Static.instance
     }
     class func mrTest(n:UInt, base:UInt)->Bool {
-        if n > 0x7FFFffff || base > 0x7FFFffff {
-            return c_mrtest(UInt64(n), UInt64(base)) != 0
-        } else {
-            if n < 2      { return false }
-            if n & 1 == 0 { return n == 2 }
-            var d = n - 1
-            while d & 1 == 0 { d >>= 1 }
-            var t:UInt = d
-            var y = UInt.powmod(base, t, n)
-            while t != n-1 && y != 1 && y != n-1 {
-                y = UInt.mulmod(y, y, n)
-                t <<= 1
-            }
-            return y == n-1 || t & 1 == 1
+        if n < 2      { return false }
+        if n & 1 == 0 { return n == 2 }
+        var d = n - 1
+        while d & 1 == 0 { d >>= 1 }
+        var t:UInt = d
+        var y = UInt.powmod(base, t, n)
+        while t != n-1 && y != 1 && y != n-1 {
+            y = UInt.mulmod(y, y, n)
+            t <<= 1
         }
+        return y == n-1 || t & 1 == 1
     }
     // cf. https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
     class func mrBases(n:UInt)->[UInt] {

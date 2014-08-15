@@ -9,13 +9,16 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+uint64_t c_mulmod(uint64_t x64, uint64_t y64, uint64_t m64) {
+    return (uint64_t)((__uint128_t)x64 * (__uint128_t)y64 % m64);
+}
 uint64_t c_powmod(uint64_t b64, uint64_t p64, uint64_t m64) {
-    __uint128_t b128, r128;
-    for (r128 = 1, b128 = b64; p64 > 0; p64 >>= 1) {
-        if ((p64 & 1) == 1) { r128 = (r128 * b128) % m64; }
-        b128 = (b128 * b128) % m64;
+    uint64_t r64;
+    for (r64 = 1; p64 > 0; p64 >>= 1) {
+        if ((p64 & 1) == 1) { r64 = c_mulmod(r64, b64, m64); }
+        b64 = c_mulmod(b64, b64, m64);
     }
-    return (uint64_t)r128;
+    return r64;
 }
 int c_mrtest(uint64_t n64, uint64_t b64) {
     if (n64 < 2)  { return 0; }

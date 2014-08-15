@@ -35,7 +35,7 @@ let u = (0xfedeca9876543210 as UInt)
 let mp32 = 0x7fffFFFF.prevPrime
 mp32 * mp32.prevPrime       => printFactors
 3_369_738_766_071_892_021   => printFactors
-// 4611686018427387821  => printFactors
+4611686018427387821  => printFactors
 //// for developer
 //func checkRange(r:Range<Int>) {
 //    let gauge = (r.endIndex - r.startIndex) / 256;
@@ -50,9 +50,7 @@ mp32 * mp32.prevPrime       => printFactors
 //    }
 //    println("Done.")
 //}
-////checkRange(0x00000002...0x0000FFFF)
-////checkRange(0x7fff0000...0x7fffFFFF)
-////checkRange(0xffff0000...0xffffFFFF)
-////checkRange(0x0000ffffFFFFff00...0x0000ffffFFFFffff)
-//UInt.Prime.squfof_one(11111, 1) => println
-//UInt.Prime.squfof_one(3_369_738_766_071_892_021, 3*5*7) => println
+//checkRange(0x00000002...0x0000FFFF)
+//checkRange(0x7fff0000...0x7fffFFFF)
+//checkRange(0xffff0000...0xffffFFFF)
+//checkRange(0x0000ffffFFFF0000...0x0000ffffFFFFffff)

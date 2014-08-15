@@ -118,7 +118,7 @@ extension UInt.Prime {
         ]
         for k in ks {
             let g = UInt(c_squfof(UInt64(n), UInt64(k)))
-            //let g = squfof_one(n, k)
+            // let g = squfof_one(n, k)
             // println("squof(\(n),\(k)) == \(k)")
             if g != 1 { return g }
         }
@@ -198,7 +198,7 @@ extension UInt.Prime {
             return result
         }
         if isPrime(n) { return result + [n] }
-        let l = n < 0x7ffffFFFF ? UInt.isqrt(n) : 0x10000
+        let l = Swift.min(UInt.isqrt(n), 0x10_0000)
         var d = pbRho(n, l, 1)
         if d == 1 {
             d = squfof(n)

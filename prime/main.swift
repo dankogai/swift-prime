@@ -37,19 +37,19 @@ mp32 * mp32.prevPrime       => printFactors
 3_369_738_766_071_892_021   => printFactors
 4611686018427387821  => printFactors
 //// for developer
-//func checkRange(r:Range<Int>) {
-//    let gauge = (r.endIndex - r.startIndex) / 256;
-//    println("Checking \(r)")
-//    for i in r {
-//        let fs = i.primeFactors
-//        if (fs.reduce(1,*) != i) {
-//            println("!!\(i):\(fs).reduce(1,*) != \(i)")
-//        }
-//        if fs[0] == 1 { i => printFactors }
-//        if i % gauge == 0 { print(".") }
-//    }
-//    println("Done.")
-//}
+func checkRange(r:Range<Int>) {
+    let gauge = (r.endIndex - r.startIndex) / 256;
+    println("Checking \(r)")
+    for i in r {
+        let fs = i.primeFactors
+        if (fs.reduce(1,*) != i) {
+            println("!!\(i):\(fs).reduce(1,*) != \(i)")
+        }
+        if fs[0] == 1 { i => printFactors }
+        if i % gauge == 0 { print(".") }
+    }
+    println("Done.")
+}
 //checkRange(0x00000002...0x0000FFFF)
 //checkRange(0x7fff0000...0x7fffFFFF)
 //checkRange(0xffff0000...0xffffFFFF)

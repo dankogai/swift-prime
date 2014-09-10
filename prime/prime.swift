@@ -234,11 +234,10 @@ extension Int {
     var nextPrime:Int { return Int(UInt(self).nextPrime) }
     var prevPrime:Int { return Int(UInt(self).prevPrime) }
     var primeFactors:[Int] {
-        return self < 0
-            ? UInt(-self).primeFactors.map{ Int($0) } + [-1]
-            : UInt(self).primeFactors.map{ Int($0) }
+        var result = UInt(abs(self)).primeFactors.map{ Int($0) }
+        if self < 0 { result += [-1] }
+        return result
     }
-
 }
 extension Int {
     class Prime {}

@@ -16,3 +16,8 @@ println(Int.Prime.within(0..<100))                // [2, 3, 5, 7, ... 97]
 println(Int.Prime.within(Int.max-100..<Int.max))  // [9223372036854775783]
 println(Int.max.primeFactors)                     // [7, 7, 73, 127, 337, 92737, 649657]
 ````
+
+TODO
+----
+
+Make it pure-swift.  For now it uses C for 128-bit arithmetics.

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9E39864A1C5396E200A19CE8 /* tap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E3986491C5396E200A19CE8 /* tap.swift */; };
 		9E966DD519919D6700953C55 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E966DD419919D6700953C55 /* main.swift */; };
 		9E966DDE19919FB500953C55 /* 128bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 9E966DDC19919FB500953C55 /* 128bit.c */; };
 		9E966DE01991B72400953C55 /* prime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E966DDF1991B72400953C55 /* prime.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9E3986491C5396E200A19CE8 /* tap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tap.swift; sourceTree = "<group>"; };
 		9E966DD119919D6700953C55 /* prime */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = prime; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E966DD419919D6700953C55 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		9E966DDB19919FB500953C55 /* prime-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "prime-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 		9E966DD319919D6700953C55 /* prime */ = {
 			isa = PBXGroup;
 			children = (
+				9E3986491C5396E200A19CE8 /* tap.swift */,
 				9E966DD419919D6700953C55 /* main.swift */,
 				9E966DDF1991B72400953C55 /* prime.swift */,
 				9EBB7BE71995F15400D16378 /* integers.swift */,
@@ -131,6 +134,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E39864A1C5396E200A19CE8 /* tap.swift in Sources */,
 				9E966DD519919D6700953C55 /* main.swift in Sources */,
 				9EBB7BE81995F15400D16378 /* integers.swift in Sources */,
 				9E966DDE19919FB500953C55 /* 128bit.c in Sources */,

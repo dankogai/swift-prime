@@ -5,13 +5,15 @@
 //  Created by Dan Kogai on 8/6/14.
 //  Copyright (c) 2014 Dan Kogai. All rights reserved.
 //
-print(2.isPrime)
-print(42.isPrime)
+let test = TAP()
+test.eq(2.isPrime, true, "2 is prime")
+test.eq(42.isPrime, false, "42 is not prime")
+test.eq(0x7FFFffff.isPrime, true, "\(0x7FFFffff) is prime")
+test.eq(UInt.max.isPrime, false, "\(UInt.max) is prime")
+test.eq(0.nextPrime, 2, "0.nextPrime is 2")
+test.eq(Int.max.prevPrime, 9223372036854775783, "\(Int.max).prevPrime is 9223372036854775783")
+test.done()
 /*
-0x7FFFffff.isPrime  => say
-UInt.max.isPrime    => say
-0.nextPrime         => say
-Int.max.prevPrime   => say
 //for p in Int.Prime() {
 //    if p > 10 { break }
 //    println(p)

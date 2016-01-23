@@ -135,11 +135,13 @@ public extension UInt.Prime {
     struct Static {
         static let instance:[UInt] = {
             var ps:[UInt] = [2, 3]
-            for var n:UInt = 5; n < 2048; n += 2 {
+            var n:UInt = 5
+            while n < 2048 {
                 for p in ps {
                     if n % p == 0 { break }
                     if p * p > n  { ps.append(n); break }
                 }
+                n += 2
             }
             return ps
             }()
@@ -185,17 +187,19 @@ public extension UInt.Prime {
         }
         return true
     }
-    public class func nextPrime(var n:UInt)->UInt {
+    public class func nextPrime(n:UInt)->UInt {
         if n < 2 { return 2 }
-        n += n & 1 == 0 ? 1 : 2
-        for ; !isPrime(n); n += 2 {}
-        return n
+        var u = n
+        u += u & 1 == 0 ? 1 : 2
+        while !isPrime(u) { u += 2 }
+        return u
     }
-    public class func prevPrime(var n:UInt)->UInt {
+    public class func prevPrime(n:UInt)->UInt {
         if n < 2 { return 2 }
-        n -= n & 1 == 0 ? 1 : 2
-        for ; !isPrime(n); n -= 2 {}
-        return n
+        var u = n
+        u -= u & 1 == 0 ? 1 : 2
+        while !isPrime(u) { u -= 2 }
+        return u
     }
     public class func within(range:Range<UInt>)->[UInt] {
         var result = [UInt]()

@@ -12,6 +12,7 @@ test.eq(0x7FFFffff.isPrime, true, "\(0x7FFFffff) is prime")
 test.eq(UInt.max.isPrime, false, "\(UInt.max) is prime")
 test.eq(0.nextPrime, 2, "0.nextPrime is 2")
 test.eq(Int.max.prevPrime, 9223372036854775783, "\(Int.max).prevPrime is 9223372036854775783")
+test.ok(Int.max.primeFactors == [7, 7, 73, 127, 337, 92737, 649657], "\(Int.max).primeFactors")
 test.done()
 /*
 //for p in Int.Prime() {

@@ -3,14 +3,122 @@
 //  prime
 //
 //  Created by Dan Kogai on 8/6/14.
-//  Copyright (c) 2014 Dan Kogai. All rights reserved.
+//  Copyright (c) 2014-2016 Dan Kogai. All rights reserved.
 //
-import Darwin
-extension UInt {
-    class Prime {}
+//
+#if os(Linux)
+    import Glibc
+#else
+    import Foundation
+#endif
+public extension UInt64 {
+    /// (x * y) mod m
+    /// unlike naive x * y % m, this does not overflow.
+    public static func mulmod(x:UInt64, _ y:UInt64, _ m:UInt64)->UInt64 {
+        if (m == 0) { fatalError("modulo by zero") }
+        if (m == 1) { return 1 }
+        var a = x % m;
+        if a == 0 { return 0 }
+        var b = y % m;
+        if b == 0 { return 0 }
+        var r:UInt64 = 0;
+        while a > 0 {
+            if a & 1 == 1 { r = (r + b) % m }
+            a >>= 1
+            b = (b << 1) % m
+        }
+        return r
+        // return c_mulmod(a, b, m)
+    }
 }
-extension UInt.Prime {
-    class var smallPrimes:[UInt] {
+public extension UInt {
+    /// (x * y) mod m without worring about overflow.
+    public static func mulmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {
+        if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
+            return x * y % m
+        }
+        return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
+    }
+    /// (b ** n) mod m
+    public static func powmod(var b:UInt, var _ n:UInt, _ m:UInt)->UInt {
+        var r:UInt = 1
+        for ; n > 0 ; n >>= 1 {
+            if n & 1 == 1 { r = mulmod(r, b, m) }
+            b = mulmod(b, b, m)
+        }
+        return r
+    }
+    /// Greatest Common Divisor
+    public static func gcd(m:UInt, _ n:UInt)->UInt {
+        if n == 0 { return m }
+        if m < n { return gcd(n, m) }
+        let r = m % n
+        return r == 0 ? n : gcd(n, r)
+    }
+    /// b to the n.
+    /// &* is neccessary to avoid exception
+    public static func ipow(var b:UInt, var _ n:UInt)->UInt {
+        var result:UInt = 1
+        for ; n > 0; n >>= 1, b = b &* b {
+            if n & 1 == 1 {
+                result = result &* b
+            }
+        }
+        return result
+    }
+    /// Integer Square Root
+    public static func isqrt(n:UInt)->UInt {
+        if n == 0 { return 0 }
+        if n == 1 { return 1 }
+        if n == 18446744073709551615 { return 4294967295 }
+        var xk = n
+        repeat {
+            let xk1 = (xk + n / xk) / 2
+            if xk1 >= xk { return xk }
+            xk = xk1
+        } while true
+    }
+    /// Integer Cube Root
+    public static func icbrt(n:UInt)->UInt {
+        if n == 0 { return 0 }
+        if n == 1 { return 1 }
+        if n == 18446744073709551615 { return 2642245 }
+        var xk = n
+        repeat {
+            let xk1 = (2*xk + n/xk/xk) / 3
+            if xk1 >= xk { return xk }
+            xk = xk1
+        } while true
+    }
+}
+public extension Int {
+    /// (x * y) mod m without worring about overflow.
+    public static func mulmod(x:Int, _ y:Int, _ m:Int)->Int {
+        let (ax, ay, am) = (abs(x),abs(y),abs(m))
+        let sxy = 0 < x ? 0 < y ? 1 : -1 : 1
+        return sxy * Int(UInt.mulmod(UInt(ax),UInt(ay),UInt(am)))
+    }
+    public static func gcd(m:Int, _ n:Int)->Int {
+        if m < 0 {
+            return gcd(-m, n < 0 ? -n : n)
+        }
+        if n == 0 { return m }
+        if m < n { return gcd(n, m) }
+        let r = m % n
+        return r == 0 ? n : gcd(n, r)
+    }
+    public static func ipow(b:Int, _ n:Int)->Int {
+        return Int(UInt.ipow(UInt(b), UInt(n)))
+    }
+    public static func isqrt(n:Int)->Int {
+        return Int(UInt.isqrt(UInt(n)))
+    }
+}
+public extension UInt {
+    public class Prime {}
+}
+public extension UInt.Prime {
+    public class var smallPrimes:[UInt] {
     struct Static {
         static let instance:[UInt] = {
             var ps:[UInt] = [2, 3]
@@ -25,7 +133,7 @@ extension UInt.Prime {
         }
         return Static.instance
     }
-    class func mrTest(n:UInt, base:UInt)->Bool {
+    public class func mrTest(n:UInt, base:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
         var d = n - 1
@@ -39,7 +147,7 @@ extension UInt.Prime {
         return y == n-1 || t & 1 == 1
     }
     // cf. https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
-    class func mrBases(n:UInt)->[UInt] {
+    public class func mrBases(n:UInt)->[UInt] {
         return n < 2047 ? [2]
         :   n < 1_373_653 ? [2, 3]
         :   n < 9_080_191 ? [31, 73]
@@ -53,7 +161,7 @@ extension UInt.Prime {
             ? [2, 3, 5, 7, 11, 13, 17, 19, 23]
         : [2, 325, 9375, 28178, 450775, 9780504, 1795265022]
     }
-    class func isPrime(n:UInt)->Bool {
+    public class func isPrime(n:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
         if n % 3 == 0 { return n == 3 }
@@ -64,19 +172,19 @@ extension UInt.Prime {
         }
         return true
     }
-    class func nextPrime(var n:UInt)->UInt {
+    public class func nextPrime(var n:UInt)->UInt {
         if n < 2 { return 2 }
         n += n & 1 == 0 ? 1 : 2
         for ; !isPrime(n); n += 2 {}
         return n
     }
-    class func prevPrime(var n:UInt)->UInt {
+    public class func prevPrime(var n:UInt)->UInt {
         if n < 2 { return 2 }
         n -= n & 1 == 0 ? 1 : 2
         for ; !isPrime(n); n -= 2 {}
         return n
     }
-    class func within(range:Range<UInt>)->[UInt] {
+    public class func within(range:Range<UInt>)->[UInt] {
         var result = [UInt]()
         var p = range.startIndex
         if !p.isPrime { p = p.nextPrime }
@@ -85,7 +193,7 @@ extension UInt.Prime {
         }
         return result
     }
-    class func pbRho(n:UInt, _ l:UInt, _ c:UInt)->UInt {
+    public class func pbRho(n:UInt, _ l:UInt, _ c:UInt)->UInt {
         //return UInt(c_pbrho(UInt64(n), UInt64(l), Int32(c)))
         var x:UInt = 2, y:UInt = 2, j:UInt = 2
         for i in 1...l {
@@ -104,7 +212,7 @@ extension UInt.Prime {
     }
     // cf. http://en.wikipedia.org/wiki/Shanks'_square_forms_factorization
     // https://github.com/danaj/Math-Prime-Util/blob/master/factor.c
-    class func squfof(n:UInt)->UInt {
+    public class func squfof(n:UInt)->UInt {
         let ks:[UInt] = [
             //3*5*7*11, 3*5*7, 3*5*11, 3*5, 3*7*11, 3*7, 5*7*11, 5*7,
             //3*11,     3,     5*11,   5,   7*11,   7,   11,     1
@@ -117,14 +225,14 @@ extension UInt.Prime {
 11,       1
         ]
         for k in ks {
-            let g = UInt(c_squfof(UInt64(n), UInt64(k)))
-            //let g = squfof_one(n, k)
+            //let g = UInt(c_squfof(UInt64(n), UInt64(k)))
+            let g = squfof_one(n, k)
             // println("squof(\(n),\(k)) == \(k)")
             if g != 1 { return g }
         }
         return 1
     }
-    class func squfof_one(n:UInt, _ k:UInt)->UInt {
+    public class func squfof_one(n:UInt, _ k:UInt)->UInt {
         if n < 2      { return 1 }
         if n & 1 == 0 { return 2 }
         let rn = UInt.isqrt(n)
@@ -180,7 +288,7 @@ extension UInt.Prime {
     }
     // factor n
     // stratagy is akin to Math::Prime::Util
-    class func factor(var n:UInt)->[UInt] {
+    public class func factor(var n:UInt)->[UInt] {
         if n < 2 { return [n] }
         if isPrime(n) { return [n] }
         var result = [UInt]()
@@ -209,7 +317,7 @@ extension UInt.Prime {
     }
 }
 extension UInt.Prime : SequenceType {
-    func generate()->AnyGenerator<UInt> {
+    public func generate()->AnyGenerator<UInt> {
         var currPrime:UInt = 0
         return anyGenerator {
             let nextPrime = currPrime.nextPrime
@@ -221,29 +329,29 @@ extension UInt.Prime : SequenceType {
         }
     }
 }
-extension UInt {
-    var isPrime:Bool { return Prime.isPrime(self) }
-    var nextPrime:UInt { return Prime.nextPrime(self) }
-    var prevPrime:UInt { return Prime.prevPrime(self) }
-    var primeFactors:[UInt] { return Prime.factor(self) }
+public extension UInt {
+    public var isPrime:Bool { return Prime.isPrime(self) }
+    public var nextPrime:UInt { return Prime.nextPrime(self) }
+    public var prevPrime:UInt { return Prime.prevPrime(self) }
+    public var primeFactors:[UInt] { return Prime.factor(self) }
 }
-extension Int {
-    var isPrime:Bool {
+public extension Int {
+    public var isPrime:Bool {
         return self < 2 ? false : UInt(self).isPrime
     }
-    var nextPrime:Int { return Int(UInt(self).nextPrime) }
-    var prevPrime:Int { return Int(UInt(self).prevPrime) }
-    var primeFactors:[Int] {
+    public var nextPrime:Int { return Int(UInt(self).nextPrime) }
+    public var prevPrime:Int { return Int(UInt(self).prevPrime) }
+    public var primeFactors:[Int] {
         var result = UInt(abs(self)).primeFactors.map{ Int($0) }
         if self < 0 { result += [-1] }
         return result
     }
 }
-extension Int {
-    class Prime {}
+public extension Int {
+    public class Prime {}
 }
 extension Int.Prime : SequenceType {
-    func generate()->AnyGenerator<Int> {
+    public func generate()->AnyGenerator<Int> {
         var currPrime = 0
         return anyGenerator {
             if currPrime < 9223372036854775783 {
@@ -255,7 +363,7 @@ extension Int.Prime : SequenceType {
     }
 }
 extension Int.Prime {
-    class func within(range:Range<Int>)->[Int] {
+    public class func within(range:Range<Int>)->[Int] {
         let start = UInt(max(range.startIndex, 0))
         let end   = UInt(range.endIndex)
         return UInt.Prime.within(start..<end).map{ Int($0) }

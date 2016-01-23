@@ -127,7 +127,6 @@ public extension UInt {
         }
     }
 }
-import Darwin
 public extension UInt.Prime {
     public class var smallPrimes:[UInt] {
     struct Static {

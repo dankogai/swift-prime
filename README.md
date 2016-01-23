@@ -35,6 +35,21 @@ Just open `Prime.playground` and enjoy.
 
 ### REPL
 
+CAVEAT: you still have to `import Prime` in REPL.
+
+````shell
+  1> 42.isPrime
+repl.swift:1:1: error: value of type 'Int' has no member 'isPrime'
+42.isPrime
+^~ ~~~~~~~
+
+  1> import Prime
+  2> 42.isPrime 
+$R0: Bool = false
+  3>
+````
+
+
 #### OS X
 
 ````shell

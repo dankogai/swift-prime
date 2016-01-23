@@ -9,8 +9,11 @@ Int.max.primeFactors
 (-42).primeFactors
 0x01234567890abcdef.primeFactors
 3_369_738_766_071_892_021.primeFactors
+1111111111111111.primeFactors
+4611686018427387821.primeFactors
 for p in UInt.Prime() {
     if p > 10 { break }
     print(p)
 }
+(0xfedeca9876543210 as UInt).primeFactors
 UInt.Prime.within(1...100)

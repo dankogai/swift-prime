@@ -6,11 +6,6 @@
 //  Copyright (c) 2014-2016 Dan Kogai. All rights reserved.
 //
 //
-#if os(Linux)
-    import Glibc
-#else
-    import Foundation
-#endif
 public extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.
@@ -257,15 +252,14 @@ public extension UInt.Prime {
         if n & 1 == 0 { return 2 }
         let rn = UInt.isqrt(n)
         if rn * rn == n { return rn }
-        let drnk = sqrt(Double(n) * Double(k))
-        let rnk = Int(drnk)
-        var p0, p1, q0, q1, q2, b, rq : Int
-        var qs = [Int]()
+        let rnk = UInt.isqrt(n) * k
+        var p0, p1, q0, q1, q2, b, rq : UInt
+        var qs = [UInt]()
         rq = 1;
         p0 = rnk; p1 = 1; q0 = 1;
-        q1 = Int((drnk + Double(p0))*(drnk - Double(p0)))
-        let l = Int(UInt.isqrt(2 * UInt.isqrt(n)))
-        var i:Int
+        q1 = (rnk &+ p0) &* (rnk &- p0)
+        let l = UInt.isqrt(2 * UInt.isqrt(n))
+        var i:UInt
         for i = 1; i < 4*l ; i++ {
             if q1 == 1 { continue }
             b = (rnk + p0) / q1
@@ -281,9 +275,9 @@ public extension UInt.Prime {
                 }
                 continue;
             }
-            // perfect squware check every other iter
+            // perfect square check every other iter
             if i & 1 == 0 { continue }
-            rq = Int.isqrt(q2);
+            rq = UInt.isqrt(q2);
             if rq * rq == q2  && !qs.contains(rq) {
                 break
             }
@@ -293,7 +287,7 @@ public extension UInt.Prime {
         // stage2:
         b = (rnk - p1)/rq; p0 = b*rq + p1;
         q0 = rq;
-        q1 = Int((drnk + Double(p0))*(drnk - Double(p0)))/q0
+        q1 = (rnk &+ p0) &* (rnk &- p0)
         while (true) {
             b = (rnk + p0) / q1
             p1 = b * q1 - p0

@@ -156,7 +156,7 @@ extension UInt.Prime {
             // perfect squware check every other iter
             if i & 1 == 0 { continue }
             rq = Int.isqrt(q2);
-            if rq * rq == q2  && !contains(qs, rq) {
+            if rq * rq == q2  && !qs.contains(rq) {
                 break
             }
             p0 = p1; q0 = q1; q1 = q2;
@@ -204,14 +204,14 @@ extension UInt.Prime {
             d = squfof(n)
         }
         result += d != 1 ? factor(d) + factor(n/d) : [1, n]
-        result.sort(<)
+        result.sortInPlace(<)
         return result
     }
 }
 extension UInt.Prime : SequenceType {
-    func generate()->GeneratorOf<UInt> {
+    func generate()->AnyGenerator<UInt> {
         var currPrime:UInt = 0
-        return GeneratorOf<UInt> {
+        return anyGenerator {
             let nextPrime = currPrime.nextPrime
             if nextPrime > currPrime {
                 currPrime = nextPrime;
@@ -243,9 +243,9 @@ extension Int {
     class Prime {}
 }
 extension Int.Prime : SequenceType {
-    func generate()->GeneratorOf<Int> {
+    func generate()->AnyGenerator<Int> {
         var currPrime = 0
-        return GeneratorOf<Int> {
+        return anyGenerator {
             if currPrime < 9223372036854775783 {
                 currPrime = currPrime.nextPrime
                 return currPrime

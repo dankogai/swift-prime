@@ -11,7 +11,7 @@
 extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.
-    static func mulmod(var a:UInt64, var _ b:UInt64, _ m:UInt64)->UInt64 {
+    static func mulmod(a:UInt64, _ b:UInt64, _ m:UInt64)->UInt64 {
 //        if (m == 0) { fatalError("modulo by zero") }
 //        if (m == 1) { return 1 }
 //        var r:UInt64 = 0
@@ -62,24 +62,24 @@ extension UInt {
         return result
     }
     /// Integer Square Root
-    static func isqrt(var n:UInt)->UInt {
+    static func isqrt(n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
         if n == 18446744073709551615 { return 4294967295 }
         var xk = n
-        do {
+        repeat {
             let xk1 = (xk + n / xk) / 2
             if xk1 >= xk { return xk }
             xk = xk1
         } while true
     }
     /// Integer Cube Root
-    static func icbrt(var n:UInt)->UInt {
+    static func icbrt(n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
         if n == 18446744073709551615 { return 2642245 }
         var xk = n
-        do {
+        repeat {
             let xk1 = (2*xk + n/xk/xk) / 3
             if xk1 >= xk { return xk }
             xk = xk1

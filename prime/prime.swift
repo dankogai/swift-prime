@@ -42,9 +42,10 @@ public extension UInt {
     /// (b ** n) mod m
     public static func powmod(b:UInt, _ x:UInt, _ m:UInt)->UInt {
         var r:UInt = 1, t = b, n = x
-        for ; n > 0 ; n >>= 1 {
+        while n > 0 {
             if n & 1 == 1 { r = mulmod(r, t, m) }
             t = mulmod(t, t, m)
+            n >>= 1
         }
         return r
     }
@@ -206,8 +207,9 @@ public extension UInt.Prime {
         var result = [UInt]()
         var p = range.startIndex
         if !p.isPrime { p = p.nextPrime }
-        for ; p < range.endIndex; p = p.nextPrime {
+        while p < range.endIndex {
             result.append(p)
+            p = p.nextPrime
         }
         return result
     }
@@ -306,7 +308,8 @@ public extension UInt.Prime {
     }
     // factor n
     // stratagy is akin to Math::Prime::Util
-    public class func factor(var n:UInt)->[UInt] {
+    public class func factor(u:UInt)->[UInt] {
+        var n = u
         if n < 2 { return [n] }
         if isPrime(n) { return [n] }
         var result = [UInt]()

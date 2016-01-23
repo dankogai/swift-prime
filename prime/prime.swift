@@ -332,17 +332,25 @@ public extension UInt.Prime {
     }
 }
 public extension UInt {
+    /// true iff `self` is prime
     public var isPrime:Bool { return Prime.isPrime(self) }
+    /// the next prime number to `self`
     public var nextPrime:UInt { return Prime.nextPrime(self) }
+    /// the previous prime number from `self`
     public var prevPrime:UInt { return Prime.prevPrime(self) }
+    /// the prime factors of `self`
     public var primeFactors:[UInt] { return Prime.factor(self) }
 }
 public extension Int {
+    /// true iff `self` is prime
     public var isPrime:Bool {
         return self < 2 ? false : UInt(self).isPrime
     }
+    /// the next prime number to `self`
     public var nextPrime:Int { return Int(UInt(self).nextPrime) }
+    /// the previous prime number from `self`
     public var prevPrime:Int { return Int(UInt(self).prevPrime) }
+    /// the prime factors of `self`
     public var primeFactors:[Int] {
         var result = UInt(abs(self)).primeFactors.map{ Int($0) }
         if self < 0 { result += [-1] }

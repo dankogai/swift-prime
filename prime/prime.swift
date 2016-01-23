@@ -284,8 +284,12 @@ public extension UInt.Prime {
         }
         return 1
     }
-    // factor n
-    // stratagy is akin to Math::Prime::Util
+    /// factor `u` and return prime facrors of it in array.
+    ///
+    /// axiom: `UInt.Prime.factor(u).reduce(1,*) == u` for any `u:UInt`
+    ///
+    /// It may fail for `u > UInt(Int.max)`.
+    /// In which case `1` is prepended to the result so the axiom still holds.
     public class func factor(u:UInt)->[UInt] {
         var n = u
         if n < 2 { return [n] }
@@ -323,6 +327,10 @@ public extension UInt {
     /// the previous prime number from `self`
     public var prevPrime:UInt { return Prime.prevPrime(self) }
     /// the prime factors of `self`
+    ///
+    /// axiom: `i.primeFactors.reduce(1,*) == i` for any `i:Int`
+    ///
+    /// for negative integers, `-1` is appended to keep axiom.
     public var primeFactors:[UInt] { return Prime.factor(self) }
 }
 public extension Int {
@@ -335,6 +343,11 @@ public extension Int {
     /// the previous prime number from `self`
     public var prevPrime:Int { return Int(UInt(self).prevPrime) }
     /// the prime factors of `self`
+    ///
+    /// axiom: `u.primeFactors.reduce(1,*) == u` for any `u:UInt`
+    ///
+    /// It may fail for `u > UInt(Int.max)`.
+    /// In which case `1` is prepended to the result.
     public var primeFactors:[Int] {
         var result = UInt(abs(self)).primeFactors.map{ Int($0) }
         if self < 0 { result += [-1] }

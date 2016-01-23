@@ -115,7 +115,20 @@ public extension Int {
     }
 }
 public extension UInt {
-    public class Prime {}
+    public class Prime : SequenceType {
+        public init(){}
+        public func generate()->AnyGenerator<UInt> {
+            var currPrime:UInt = 0
+            return anyGenerator {
+                let nextPrime = currPrime.nextPrime
+                if nextPrime > currPrime {
+                    currPrime = nextPrime;
+                    return currPrime
+                }
+                return nil
+            }
+        }
+    }
 }
 public extension UInt.Prime {
     public class var smallPrimes:[UInt] {
@@ -316,19 +329,6 @@ public extension UInt.Prime {
         return result
     }
 }
-extension UInt.Prime : SequenceType {
-    public func generate()->AnyGenerator<UInt> {
-        var currPrime:UInt = 0
-        return anyGenerator {
-            let nextPrime = currPrime.nextPrime
-            if nextPrime > currPrime {
-                currPrime = nextPrime;
-                return currPrime
-            }
-            return nil
-        }
-    }
-}
 public extension UInt {
     public var isPrime:Bool { return Prime.isPrime(self) }
     public var nextPrime:UInt { return Prime.nextPrime(self) }
@@ -348,21 +348,21 @@ public extension Int {
     }
 }
 public extension Int {
-    public class Prime {}
-}
-extension Int.Prime : SequenceType {
-    public func generate()->AnyGenerator<Int> {
-        var currPrime = 0
-        return anyGenerator {
-            if currPrime < 9223372036854775783 {
-                currPrime = currPrime.nextPrime
-                return currPrime
+    public class Prime : SequenceType {
+        public init(){}
+        public func generate()->AnyGenerator<Int> {
+            var currPrime = 0
+            return anyGenerator {
+                if currPrime < 9223372036854775783 {
+                    currPrime = currPrime.nextPrime
+                    return currPrime
+                }
+                return nil
             }
-            return nil
         }
     }
 }
-extension Int.Prime {
+public extension Int.Prime {
     public class func within(range:Range<Int>)->[Int] {
         let start = UInt(max(range.startIndex, 0))
         let end   = UInt(range.endIndex)

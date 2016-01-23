@@ -40,11 +40,11 @@ public extension UInt {
         return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
     }
     /// (b ** n) mod m
-    public static func powmod(var b:UInt, var _ n:UInt, _ m:UInt)->UInt {
-        var r:UInt = 1
+    public static func powmod(b:UInt, _ x:UInt, _ m:UInt)->UInt {
+        var r:UInt = 1, t = b, n = x
         for ; n > 0 ; n >>= 1 {
-            if n & 1 == 1 { r = mulmod(r, b, m) }
-            b = mulmod(b, b, m)
+            if n & 1 == 1 { r = mulmod(r, t, m) }
+            t = mulmod(t, t, m)
         }
         return r
     }
@@ -55,16 +55,17 @@ public extension UInt {
         let r = m % n
         return r == 0 ? n : gcd(n, r)
     }
-    /// b to the n.
+    /// b to the x.
     /// &* is neccessary to avoid exception
-    public static func ipow(var b:UInt, var _ n:UInt)->UInt {
-        var result:UInt = 1
-        for ; n > 0; n >>= 1, b = b &* b {
+    public static func ipow(b:UInt, _ x:UInt)->UInt {
+        var r:UInt = 1, t = b, n = x
+        while n > 0 {
             if n & 1 == 1 {
-                result = result &* b
+                r = r &* t
             }
+            n >>= 1; t = t &* t
         }
-        return result
+        return r
     }
     /// Integer Square Root
     public static func isqrt(n:UInt)->UInt {

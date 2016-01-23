@@ -1,3 +1,5 @@
+[![build status](https://secure.travis-ci.org/dankogai/swift-prime.png)](http://travis-ci.org/dankogai/swift-prime)
+
 # swift-prime
 
 Prime number in Pure Swift

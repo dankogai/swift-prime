@@ -1,10 +1,8 @@
-swift-prime
-===========
+# swift-prime
 
-Prime number in Swift
+Prime number in Pure Swift
 
-SYNOPSIS
---------
+## SYNOPSIS
 
 ````swift
 2.isPrime                               // true
@@ -17,7 +15,42 @@ Int.Prime.within(Int.max-100..<Int.max) // [9223372036854775783]
 Int.max.primeFactors                    // [7, 7, 73, 127, 337, 92737, 649657]
 ````
 
-TODO
-----
+## Requirement
 
-Make it pure-swift.  For now it uses C for 128-bit arithmetics.
+Swift 2.x, both Xcode 7 and Linux.
+
+* It emits warings on Swift 2.2 but works okay.
+
+## USAGE
+
+### In your project
+
+Just add [prime.swift] to it.
+
+[prime.swift]: prime/prime.swift
+
+### Playground
+
+Just open `Prime.playground` and enjoy.
+
+### REPL
+
+#### OS X
+
+````shell
+git clone https://github.com/dankogai/swift-prime.git
+cd swift-prime
+make repl
+````
+
+#### Linux
+
+````shell
+git clone https://github.com/dankogai/swift-prime.git
+cd swift-prime
+make SWIFTPATH=${YOUR_SWIFT_PATH} repl # ${YOUR_SWIFT_PATH}=~/swift/usr/bin in my case
+````
+
+## CAVEAT
+
+It used to depend on 128-bit arithmetics bridged to C but it is written to be C-Free.  In exchange it is a little slower.

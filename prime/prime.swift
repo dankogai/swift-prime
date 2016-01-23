@@ -18,7 +18,7 @@ public extension UInt64 {
         if b == 0 { return 0 }
         var r:UInt64 = 0;
         while a > 0 {
-            if a & 1 == 1 { r = (r + b) % m }
+            if a & 1 == 1 { r = (r &+ b) % m }
             a >>= 1
             b = (b << 1) % m
         }
@@ -29,9 +29,9 @@ public extension UInt64 {
 public extension UInt {
     /// (x * y) mod m without worring about overflow.
     public static func mulmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {
-        if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
-            return x * y % m
-        }
+        //if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
+        //    return x * y % m
+        //}
         return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
     }
     /// (b ** n) mod m
@@ -127,6 +127,7 @@ public extension UInt {
         }
     }
 }
+import Darwin
 public extension UInt.Prime {
     public class var smallPrimes:[UInt] {
     struct Static {
@@ -229,76 +230,59 @@ public extension UInt.Prime {
     // https://github.com/danaj/Math-Prime-Util/blob/master/factor.c
     public class func squfof(n:UInt)->UInt {
         let ks:[UInt] = [
-            //3*5*7*11, 3*5*7, 3*5*11, 3*5, 3*7*11, 3*7, 5*7*11, 5*7,
-            //3*11,     3,     5*11,   5,   7*11,   7,   11,     1
-3*5*7*11, 3*5*7,  3*5*7*11*13, 3*5*7*13, 3*5*7*11*17, 3*5*11,
-3*5*7*17, 3*5,    3*5*7*11*19, 3*5*11*13,3*5*7*19,    3*5*7*13*17,
-3*5*13,   3*7*11, 3*7,         5*7*11,   3*7*13,      5*7,
-3*5*17,   5*7*13, 3*5*19,      3*11,     3*7*17,      3,
-3*11*13,  5*11,   3*7*19,      3*13,     5,           5*11*13,
-5*7*19,   5*13,   7*11,        7,        3*17,        7*13,
-11,       1
+            1,      3,      5,      7,      11,
+            3*5,    3*7,    3*11,   5*7,    5*11,
+            7*11,   3*5*7,  3*5*11, 5*7*11, 3*5*7*11
         ]
-        for k in ks {
+        for k in ks.reverse() {
             //let g = UInt(c_squfof(UInt64(n), UInt64(k)))
             let g = squfof_one(n, k)
-            // println("squof(\(n),\(k)) == \(k)")
+            // print("squof(\(n),\(k)) == \(g)")
             if g != 1 { return g }
         }
         return 1
     }
     public class func squfof_one(n:UInt, _ k:UInt)->UInt {
+        // print("n=\(n),k=\(k)")
         if n < 2      { return 1 }
         if n & 1 == 0 { return 2 }
         let rn = UInt.isqrt(n)
         if rn * rn == n { return rn }
-        let rnk = UInt.isqrt(n) * k
-        var p0, p1, q0, q1, q2, b, rq : UInt
-        var qs = [UInt]()
-        rq = 1;
-        p0 = rnk; p1 = 1; q0 = 1;
-        q1 = (rnk &+ p0) &* (rnk &- p0)
-        let l = UInt.isqrt(2 * UInt.isqrt(n))
-        var i:UInt
-        for i = 1; i < 4*l ; i++ {
-            if q1 == 1 { continue }
-            b = (rnk + p0) / q1
-            p1 = b * q1 - p0
-            q2 = q0 + b * (p0 - p1)
-            //println("p0=\(p0),q0=\(q0)q1=\(q1),q2=\(q2)")
-            // skip trivial factors
-            if q1 <= 2 * l {
-                if q1 & 1 == 1 {
-                    if q1 <= l { qs.append(q1) }
-                } else {
-                    qs.append(q1 >> 1)
+        // if overflow just give up
+        if UInt.multiplyWithOverflow(n, k).overflow { return 1 }
+        let rkn = Int(UInt.isqrt(k) * rn)
+        var p0 = rkn
+        var q0 = 1
+        var q1 = Int(k) &* Int(n) &- p0*p0
+        var b0, b1, p1, q2 : Int
+        for i in 0..<rkn {
+            // print("Stage 1: p0=\(p0), q0=\(q0), q1=\(q1)")
+            b1 = (rkn &+ p0) / q1
+            p1 = b1 &* q1 &- p0
+            q2 = q0 &+ b1 &* (p0 - p1)
+            if i & 1 == 1 {
+                let rq = Int(UInt.isqrt(UInt(q1)))
+                if rq * rq == q1 {  // stage 2
+                    b0 = (rkn &- p0) / rq
+                    p0 = b0 &* rq &+ p0
+                    q0 = rq
+                    q1 = (Int(k) &* Int(n) &- p0*p0) / q0
+                    for _ in 0..<64 {
+                        // print("Stage 2: p0=\(p0), q0=\(q0), q1=\(q1)")
+                        b1 = (rkn &+ p0) / q1
+                        p1 = b1 &* q1 &- p0
+                        q2 = q0 &+ b1 &* (p0 - p1)
+                        if p0 == p1 {
+                            return UInt.gcd(n, UInt(p1))
+                        }
+                        p0 = p1; q0 = q1; q1 = q2;
+                    }
+                    return 1;
                 }
-                continue;
             }
-            // perfect square check every other iter
-            if i & 1 == 0 { continue }
-            rq = UInt.isqrt(q2);
-            if rq * rq == q2  && !qs.contains(rq) {
-                break
-            }
-            p0 = p1; q0 = q1; q1 = q2;
-        }
-        if i == 4*l { return 1 }
-        // stage2:
-        b = (rnk - p1)/rq; p0 = b*rq + p1;
-        q0 = rq;
-        q1 = (rnk &+ p0) &* (rnk &- p0)
-        while (true) {
-            b = (rnk + p0) / q1
-            p1 = b * q1 - p0
-            q2 = q0 + b * (p0 - p1)
-            if p0 == p1 { break }
             p0 = p1; q0 = q1; q1 = q2
         }
-        //printf("p0=%llu,q0=%llu,q1=%llu,q2=%llu\n",p0,q0,q1,q2);
-        let g = UInt.gcd(n, UInt(p0))
-        return g == n ? 1 : g;
-        //return ((q1 & 1) ? q1 : q1 >> 1);
+        return 1
     }
     // factor n
     // stratagy is akin to Math::Prime::Util
@@ -321,7 +305,7 @@ public extension UInt.Prime {
             return result
         }
         if isPrime(n) { return result + [n] }
-        let l = Swift.min(UInt.isqrt(n), 0x10_0000)
+        let l = Swift.min(UInt.isqrt(n), 0x1_0000)
         var d = pbRho(n, l, 1)
         if d == 1 {
             d = squfof(n)

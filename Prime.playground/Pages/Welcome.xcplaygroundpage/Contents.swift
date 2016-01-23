@@ -17,3 +17,5 @@ for p in UInt.Prime() {
 }
 (0xfedeca9876543210 as UInt).primeFactors
 UInt.Prime.within(1...100)
+let bigu = (UInt(UInt32.max).prevPrime * UInt(UInt32.max).prevPrime.prevPrime)
+

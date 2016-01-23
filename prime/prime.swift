@@ -248,8 +248,9 @@ public extension UInt.Prime {
         if n & 1 == 0 { return 2 }
         let rn = UInt.isqrt(n)
         if rn * rn == n { return rn }
-        // if overflow just give up
-        if UInt.multiplyWithOverflow(n, k).overflow { return 1 }
+        // if overflows just give up
+        if n > UInt(Int.max) { return 1 }
+        if Int.multiplyWithOverflow(Int(n), Int(k)).overflow { return 1 }
         let rkn = Int(UInt.isqrt(k) * rn)
         var p0 = rkn
         var q0 = 1

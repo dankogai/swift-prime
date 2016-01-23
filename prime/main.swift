@@ -15,46 +15,8 @@ test.eq(Int.max.prevPrime, 9223372036854775783, "\(Int.max).prevPrime is 9223372
 test.ok(Int.max.primeFactors == [7,7,73,127,337,92737,649657], "\(Int.max).primeFactors")
 let i32pmax0  = Int(Int32.max).prevPrime
 let i32pmax1  = i32pmax0.prevPrime
-test.ok((i32pmax0*i32pmax1).primeFactors == [i32pmax1,i32pmax0], "\(i32pmax0) * \(i32pmax1)")
+test.ok((i32pmax0*i32pmax1).primeFactors == [i32pmax1,i32pmax0], "\(i32pmax0)*\(i32pmax1)")
+let u32pmax0  = UInt(UInt32.max).prevPrime
+let u32pmax1  = u32pmax0.prevPrime
+test.ok( (u32pmax0*u32pmax1).primeFactors.contains(1), "\(u32pmax0)*\(u32pmax1) is too large")
 test.done()
-/*
-//for p in Int.Prime() {
-//    if p > 10 { break }
-//    println(p)
-//}
-Int.Prime.within(0..<100)               => say
-Int.Prime.within(Int.max-100..<Int.max) => say
-//// factors
-func printFactors(n:Int){print("\(n):\(n.primeFactors)")}
-(UInt.max, UInt.max.primeFactors)  => say
--42 => printFactors
-Int.max                            => printFactors
-UInt.ipow(2,63).primeFactors.count => say
-Int.Prime.within(2...47).reduce(1,combine: *)    => printFactors
-0x0123456789abcdef              => printFactors
-let u = (0xfedeca9876543210 as UInt)
-(u, u.primeFactors)             => say
-1111111111111111                => printFactors
-let mp32 = 0x7fffFFFF.prevPrime
-mp32 * mp32.prevPrime       => printFactors
-3_369_738_766_071_892_021   => printFactors
-4611686018427387821  => printFactors
-//// for developer
-func checkRange(r:Range<UInt>) {
-    let gauge = UInt(r.endIndex - r.startIndex) / 256;
-    print("Checking \(r)")
-    for i in r {
-        let fs = i.primeFactors
-        if (fs.reduce(1,combine: *) != i) {
-            print("!!\(i):\(fs).reduce(1,*) != \(i)")
-        }
-        if fs[0] == 1 { print("\(i) => \(fs)") }
-        if i % gauge == 0 { print(".", terminator: "") }
-    }
-    print("Done.")
-}
-*/
-//checkRange(0x00000002...0x0000FFFF)
-//checkRange(0x7fff0000...0x7fffFFFF)
-//checkRange(0xffff0000...0xffffFFFF)
-//checkRange(0x7FFFffffFFFF0000...0x7FFFffffFFFFffff)

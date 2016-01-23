@@ -2,7 +2,7 @@
 
 # swift-prime
 
-Prime number in Pure Swift
+Prime number extension in Pure Swift
 
 ## SYNOPSIS
 

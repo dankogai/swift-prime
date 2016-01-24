@@ -129,7 +129,8 @@ public extension UInt {
     }
 }
 public extension UInt.Prime {
-    public static let smallPrimes:[UInt] = {
+    /// primes less than 2048
+    public static let tinyPrimes:[UInt] = {
         var ps:[UInt] = [2, 3]
         var n:UInt = 5
         while n < 2048 {
@@ -164,7 +165,7 @@ public extension UInt.Prime {
     /// [Miller-Rabin] test `n` for `base`
     ///
     /// [Miller-Rabin]: https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
-    public class func mrTest(n:UInt, base:UInt)->Bool {
+    public class func millerRabinTest(n:UInt, base:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
         var d = n - 1
@@ -185,7 +186,7 @@ public extension UInt.Prime {
         if n % 7 == 0 { return n == 7 }
         for i in 0..<A014233.count {
             // print("mrTest(\(n), base:\(smallPrimes[i]))")
-            if mrTest(n, base:smallPrimes[i]) == false { return false }
+            if millerRabinTest(n, base:tinyPrimes[i]) == false { return false }
             if n < A014233[i] { break }
         }
         return true
@@ -214,7 +215,14 @@ public extension UInt.Prime {
         }
         return result
     }
-    public class func pbRho(n:UInt, _ l:UInt, _ c:UInt)->UInt {
+    /// Try to factor `n` by [Pollard's rho] algorithm
+    ///
+    /// [Pollard's rho]: https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
+    ///
+    /// - parameter n: the number to factor
+    /// - parameter l: the number of iterations
+    /// - parameter c: seed
+    public class func pollardsRho(n:UInt, _ l:UInt, _ c:UInt)->UInt {
         //return UInt(c_pbrho(UInt64(n), UInt64(l), Int32(c)))
         var x:UInt = 2, y:UInt = 2, j:UInt = 2
         for i in 1...l {
@@ -239,10 +247,14 @@ public extension UInt.Prime {
         3*5,    3*7,    3*11,   5*7,    5*11,
         7*11,   3*5*7,  3*5*11, 3*7*11, 5*7*11, 3*5*7*11
     ]
+    /// Try to factor `n` by [SQUFOF] = Shanks' Square Forms Factorization
+    ///
+    /// [SQUFOF]: http://en.wikipedia.org/wiki/Shanks'_square_forms_factorization
     public class func squfof(n:UInt)->UInt {
-        let ks = squfofMultipliers.filter { n < UInt.max / $0 }
+        let ks = squfofMultipliers.filter{n < UInt(Int.max) / $0}.reverse()
         // print("ks=\(ks)")
         for k in ks {
+            if UInt.multiplyWithOverflow(n, k).overflow { continue }
             //let g = UInt(c_squfof(UInt64(n), UInt64(k)))
             let g = squfof_one(n, k)
             // print("squof(\(n),\(k)) == \(g)")
@@ -298,20 +310,20 @@ public extension UInt.Prime {
     ///
     /// axiom: `UInt.Prime.factor(u).reduce(1,*) == u` for any `u:UInt`
     ///
-    /// It may fail for `u > UInt(Int.max)`.
+    /// It should succeed for all `u <= Int.max` but may fail for larger UInts.
     /// In which case `1` is prepended to the result so the axiom still holds.
     public class func factor(u:UInt)->[UInt] {
         var n = u
         if n < 2 { return [n] }
         if isPrime(n) { return [n] }
         var result = [UInt]()
-        for p in smallPrimes[0..<83] {
+        for p in tinyPrimes[0..<83] {
             while n % p == 0 { result.append(p); n /= p }
             if n == 1 { return result }
         }
         if isPrime(n) { return result + [n] }
-        if n < UInt(smallPrimes.last! * smallPrimes.last!) {
-            for p in smallPrimes[83..<smallPrimes.count] {
+        if n < UInt(tinyPrimes.last! * tinyPrimes.last!) {
+            for p in tinyPrimes[83..<tinyPrimes.count] {
                 while n % p == 0 { result.append(p); n /= p }
                 if n == 1 { return result }
             }
@@ -320,7 +332,7 @@ public extension UInt.Prime {
         }
         if isPrime(n) { return result + [n] }
         let l = Swift.min(UInt.isqrt(n), 0x1_0000)
-        var d = pbRho(n, l, 1)
+        var d = pollardsRho(n, l, 1)
         if d == 1 {
             d = squfof(n)
         }

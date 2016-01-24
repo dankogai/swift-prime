@@ -75,6 +75,7 @@ public extension UInt {
             xk = xk1
         } while true
     }
+    
     /// Integer Cube Root
     public static func icbrt(n:UInt)->UInt {
         if n == 0 { return 0 }
@@ -247,25 +248,27 @@ public extension UInt.Prime {
         if rn * rn == n { return rn }
         // if overflows just give up
         if n > UInt(Int.max) { return 1 }
-        if Int.multiplyWithOverflow(Int(n), Int(k)).overflow { return 1 }
-        let rkn = Int(UInt.isqrt(k) * rn)
+        let kn = Int(k) &* Int(n)
+        let rkn = Int.isqrt(kn)
         var p0 = rkn
         var q0 = 1
-        var q1 = Int(k) &* Int(n) &- p0*p0
+        var q1 = kn &- p0*p0
         var b0, b1, p1, q2 : Int
-        for i in 0..<rkn {
+        for i in 0..<Int.isqrt(2 * rkn) {
             // print("Stage 1: p0=\(p0), q0=\(q0), q1=\(q1)")
             b1 = (rkn &+ p0) / q1
             p1 = b1 &* q1 &- p0
             q2 = q0 &+ b1 &* (p0 - p1)
             if i & 1 == 1 {
-                let rq = Int(UInt.isqrt(UInt(q1)))
-                if rq * rq == q1 {  // stage 2
+                let rq = Int.isqrt(q1)
+                if rq * rq == q1 {
+                    //  square root found; the algorithm cannot fail now.
                     b0 = (rkn &- p0) / rq
                     p0 = b0 &* rq &+ p0
                     q0 = rq
-                    q1 = (Int(k) &* Int(n) &- p0*p0) / q0
-                    for _ in 0..<64 {
+                    q1 = (kn &- p0*p0) / q0
+                    //for _ in 0..<64 {
+                    while true {
                         // print("Stage 2: p0=\(p0), q0=\(q0), q1=\(q1)")
                         b1 = (rkn &+ p0) / q1
                         p1 = b1 &* q1 &- p0
@@ -275,7 +278,6 @@ public extension UInt.Prime {
                         }
                         p0 = p1; q0 = q1; q1 = q2;
                     }
-                    return 1;
                 }
             }
             p0 = p1; q0 = q1; q1 = q2

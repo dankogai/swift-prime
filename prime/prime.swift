@@ -12,6 +12,7 @@ public extension UInt64 {
     public static func mulmod(x:UInt64, _ y:UInt64, _ m:UInt64)->UInt64 {
         if (m == 0) { fatalError("modulo by zero") }
         if (m == 1) { return 1 }
+        if (m == 2) { return x & 1 }  // just odd or even
         var a = x % m;
         if a == 0 { return 0 }
         var b = y % m;
@@ -29,9 +30,9 @@ public extension UInt64 {
 public extension UInt {
     /// (x * y) mod m without worring about overflow.
     public static func mulmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {
-        //if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
-        //    return x * y % m
-        //}
+        if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
+            return (x &* y) % m
+        }
         return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
     }
     /// (b ** n) mod m

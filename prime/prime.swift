@@ -223,15 +223,13 @@ public extension UInt.Prime {
     // cf. 
     //   http://en.wikipedia.org/wiki/Shanks'_square_forms_factorization
     //   https://github.com/danaj/Math-Prime-Util/blob/master/factor.c
-    public static let squfof_multipliers:[UInt] = [
+    public static let squfofMultipliers:[UInt] = [
         1,      3,      5,      7,      11,
         3*5,    3*7,    3*11,   5*7,    5*11,
         7*11,   3*5*7,  3*5*11, 3*7*11, 5*7*11, 3*5*7*11
     ]
     public class func squfof(n:UInt)->UInt {
-        let ks = UInt.Prime.squfof_multipliers.filter {
-            n < UInt.max / $0
-        }
+        let ks = squfofMultipliers.filter { n < UInt.max / $0 }
         // print("ks=\(ks)")
         for k in ks {
             //let g = UInt(c_squfof(UInt64(n), UInt64(k)))

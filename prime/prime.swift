@@ -35,9 +35,12 @@ public extension UInt {
         }
         return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
     }
-    /// (b ** n) mod m
-    public static func powmod(b:UInt, _ x:UInt, _ m:UInt)->UInt {
-        var r:UInt = 1, t = b, n = x
+    /// (x ** y) mod m
+    public static func powmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {
+        if (m == 0) { fatalError("modulo by zero") }
+        if (m == 1) { return 1 }
+        if (m == 2) { return x & 1 }  // just odd or even
+        var r:UInt = 1, t = x, n = y
         while n > 0 {
             if n & 1 == 1 { r = mulmod(r, t, m) }
             t = mulmod(t, t, m)
@@ -52,11 +55,10 @@ public extension UInt {
         let r = m % n
         return r == 0 ? n : gcd(n, r)
     }
-    /// b to the x.
-    /// &* is neccessary to avoid exception
+    /// b ** x
     public static func ipow(b:UInt, _ x:UInt)->UInt {
         var r:UInt = 1, t = b, n = x
-        while n > 0 {
+        while n > 0 {   // &* is neccessary to avoid overflow exception
             if n & 1 == 1 {
                 r = r &* t
             }
@@ -64,7 +66,7 @@ public extension UInt {
         }
         return r
     }
-    /// Integer Square Root
+    /// Integer Square Root of `n`
     public static func isqrt(n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
@@ -77,7 +79,7 @@ public extension UInt {
         } while true
     }
     
-    /// Integer Cube Root
+    /// Integer Cube Root of `n`
     public static func icbrt(n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
@@ -97,6 +99,7 @@ public extension Int {
         let sxy = 0 < x ? 0 < y ? 1 : -1 : 1
         return sxy * Int(UInt.mulmod(UInt(ax),UInt(ay),UInt(am)))
     }
+    /// Greatest Common Divisor
     public static func gcd(m:Int, _ n:Int)->Int {
         if m < 0 {
             return gcd(-m, n < 0 ? -n : n)
@@ -106,9 +109,11 @@ public extension Int {
         let r = m % n
         return r == 0 ? n : gcd(n, r)
     }
+    /// b ** x
     public static func ipow(b:Int, _ n:Int)->Int {
         return Int(UInt.ipow(UInt(b), UInt(n)))
     }
+    /// Integer Square Root of `n`
     public static func isqrt(n:Int)->Int {
         return Int(UInt.isqrt(UInt(n)))
     }
@@ -186,7 +191,7 @@ public extension UInt.Prime {
         if n % 5 == 0 { return n == 5 }
         if n % 7 == 0 { return n == 7 }
         for i in 0..<A014233.count {
-            // print("mrTest(\(n), base:\(smallPrimes[i]))")
+            // print("millerRabinTest(\(n), base:\(smallPrimes[i]))")
             if millerRabinTest(n, base:tinyPrimes[i]) == false { return false }
             if n < A014233[i] { break }
         }

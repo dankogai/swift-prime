@@ -1,5 +1,7 @@
-//: Playground - noun: a place where people can play
+/*:
+# Welcome!
 
+*/
 2.isPrime
 42.isPrime
 0x7FFFffff.isPrime // M31

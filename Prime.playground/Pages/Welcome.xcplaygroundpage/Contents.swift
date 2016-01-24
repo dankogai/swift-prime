@@ -17,3 +17,6 @@ for p in Int.Prime() {  //  Prime Generator
     print(p)
 }
 UInt.Prime.within(1...100)  // All primes within the range
+UInt.Prime.smallPrimes[0..<12]
+2047.primeFactors
+//318665857834031151167461 as UInt

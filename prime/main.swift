@@ -12,6 +12,10 @@ test.eq(0x7FFFffff.isPrime, true, "\(0x7FFFffff) is prime")
 test.eq(UInt.max.isPrime, false, "\(UInt.max) is prime")
 test.eq(0.nextPrime, 2, "0.nextPrime is 2")
 test.eq(Int.max.prevPrime, 9223372036854775783, "\(Int.max).prevPrime is 9223372036854775783")
+let A014233 = UInt.Prime.A014233
+for i in 0..<A014233.count {
+    test.eq(A014233[i].isPrime, false, "A014233[\(i)]==\(A014233[i]) is not prime")
+}
 test.eq(Int.max.primeFactors, [7,7,73,127,337,92737,649657], "Int.max.primeFactors")
 let two63 = [UInt](count:63, repeatedValue:2)
 let i32max = UInt(Int32.max)

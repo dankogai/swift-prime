@@ -141,6 +141,29 @@ public extension UInt.Prime {
         }
         return ps
     }()
+    /// ### [A014233]
+    ///
+    /// Smallest odd number for which Miller-Rabin primality test
+    /// on bases <= n-th prime does not reveal compositeness.
+    ///
+    /// [A014233]: https://oeis.org/A014233
+    public static let A014233:[UInt] = [
+            2047,                   // p0   = 2
+            1373653,                // p1   = 3
+            25326001,               // p2   = 5
+            3215031751,             // p3   = 7
+            2152302898747,          // p4   = 11
+            3474749660383,          // p5   = 13
+            341550071728321,        // p6   = 17
+            341550071728321,        // p7   = 19
+            3825123056546413051,    // p8   = 23
+            3825123056546413051,    // p9   = 29
+            3825123056546413051,    // p10  = 31
+            0                       // p11  = 37; 318665857834031151167461  > UInt.max
+    ]
+    /// [Miller-Rabin] test `n` for `base`
+    ///
+    /// [Miller-Rabin]: https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
     public class func mrTest(n:UInt, base:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
@@ -154,29 +177,16 @@ public extension UInt.Prime {
         }
         return y == n-1 || t & 1 == 1
     }
-    // cf. https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
-    public class func mrBases(n:UInt)->[UInt] {
-        return n < 2047 ? [2]
-        :   n < 1_373_653 ? [2, 3]
-        :   n < 9_080_191 ? [31, 73]
-        :   n < 25_326_001 ? [2, 3, 5]
-        :   n < 4_759_123_141 ? [2, 7, 61]
-        :   n < 1_122_004_669_633 ? [2, 13, 23, 1662803]
-        :   n < 2_152_302_898_747 ? [2, 3, 5, 7, 11]
-        :   n < 3_474_749_660_383 ? [2, 3, 5, 7, 11, 13]
-        :   n < 341_550_071_728_321 ? [2, 3, 5, 7, 11, 13, 17]
-        :   n < 3_825_123_056_546_413_051
-            ? [2, 3, 5, 7, 11, 13, 17, 19, 23]
-        : [2, 325, 9375, 28178, 450775, 9780504, 1795265022]
-    }
     public class func isPrime(n:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }
         if n % 3 == 0 { return n == 3 }
         if n % 5 == 0 { return n == 5 }
         if n % 7 == 0 { return n == 7 }
-        for b in mrBases(n) {
-            if mrTest(n, base:b) == false { return false }
+        for i in 0..<A014233.count {
+            // print("mrTest(\(n), base:\(smallPrimes[i]))")
+            if mrTest(n, base:smallPrimes[i]) == false { return false }
+            if n < A014233[i] { break }
         }
         return true
     }

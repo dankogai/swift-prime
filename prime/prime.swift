@@ -128,23 +128,18 @@ public extension UInt {
     }
 }
 public extension UInt.Prime {
-    public class var smallPrimes:[UInt] {
-    struct Static {
-        static let instance:[UInt] = {
-            var ps:[UInt] = [2, 3]
-            var n:UInt = 5
-            while n < 2048 {
-                for p in ps {
-                    if n % p == 0 { break }
-                    if p * p > n  { ps.append(n); break }
-                }
-                n += 2
+    public static let smallPrimes:[UInt] = {
+        var ps:[UInt] = [2, 3]
+        var n:UInt = 5
+        while n < 2048 {
+            for p in ps {
+                if n % p == 0 { break }
+                if p * p > n  { ps.append(n); break }
             }
-            return ps
-            }()
+            n += 2
         }
-        return Static.instance
-    }
+        return ps
+    }()
     public class func mrTest(n:UInt, base:UInt)->Bool {
         if n < 2      { return false }
         if n & 1 == 0 { return n == 2 }

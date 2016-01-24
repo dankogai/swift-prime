@@ -13,11 +13,22 @@ test.eq(UInt.max.isPrime, false, "\(UInt.max) is prime")
 test.eq(0.nextPrime, 2, "0.nextPrime is 2")
 test.eq(Int.max.prevPrime, 9223372036854775783, "\(Int.max).prevPrime is 9223372036854775783")
 test.ok(Int.max.primeFactors == [7,7,73,127,337,92737,649657], "Int.max.primeFactors")
-let i32max = Int(Int32.max)
-test.ok((i32max*i32max).primeFactors == [i32max, i32max], "(Int32.max ** 2).primeFactors")
-let i32pmax0  = Int(Int32.max).prevPrime
+let two63 = [UInt](count:63, repeatedValue:2)
+let i32max = UInt(Int32.max)
+let i32pmax0  = UInt(Int32.max).prevPrime
 let i32pmax1  = i32pmax0.prevPrime
-test.ok((i32pmax0*i32pmax1).primeFactors == [i32pmax1,i32pmax0], "\(i32pmax0)*\(i32pmax1)")
+let composites:[UInt:[UInt]] = [
+    two63.reduce(1,combine:*) : two63,
+    i32max*i32max       : [i32max, i32max],
+    i32pmax0*i32pmax1   : [i32pmax1, i32pmax0],
+    11111111111111111   : [2071723, 5363222357],
+    614889782588491410  : [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
+    3369738766071892021 : [204518747,16476429743],
+    // 10023859281455311421:[1308520867,7660450463]
+]
+for (k, v) in composites {
+    test.ok(k.primeFactors == v, "\(k).primeFactor == \(v)")
+}
 let u32pmax0  = UInt(UInt32.max).prevPrime
 let u32pmax1  = u32pmax0.prevPrime
 test.ok( (u32pmax0*u32pmax1).primeFactors.contains(1), "\(u32pmax0)*\(u32pmax1) is too large")

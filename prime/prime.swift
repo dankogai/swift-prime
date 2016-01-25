@@ -30,10 +30,8 @@ public extension UInt64 {
 public extension UInt {
     /// (x * y) mod m without worring about overflow.
     public static func mulmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {
-        if x <= 0xFFFFffff && y <= 0xFFFFffff && m <= 0xFFFFffff {
-            return (x &* y) % m
-        }
-        return UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
+        let (xy, overflow) = UInt.multiplyWithOverflow(x, y)
+        return !overflow ?  xy % m : UInt(UInt64.mulmod(UInt64(x),UInt64(y),UInt64(m)))
     }
     /// (x ** y) mod m
     public static func powmod(x:UInt, _ y:UInt, _ m:UInt)->UInt {

@@ -7,6 +7,7 @@ Prime number extension in Pure Swift
 ## SYNOPSIS
 
 ````swift
+import Prime                            // not needed if you are using prime.swift directly
 2.isPrime                               // true
 42.isPrime                              // false
 0x7FFFffff.isPrime                      // true (M31)
@@ -33,7 +34,7 @@ Just add [prime.swift] to it.
 
 ### Playground
 
-Just open `Prime.playground` and enjoy.
+Just open the playground file of your OS of choice and enjoy.  OSX most detaild.  iOS and tvOS just for testing purpurse.
 
 ### REPL
 

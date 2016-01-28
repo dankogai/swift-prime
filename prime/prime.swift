@@ -293,7 +293,6 @@ public extension UInt.Prime {
                     p0 = b0 &* rq &+ p0
                     q0 = rq
                     q1 = (kn &- p0*p0) / q0
-                    //for _ in 0..<64 {
                     while true {
                         // print("Stage 2: p0=\(p0), q0=\(q0), q1=\(q1)")
                         b1 = (rkn &+ p0) / q1

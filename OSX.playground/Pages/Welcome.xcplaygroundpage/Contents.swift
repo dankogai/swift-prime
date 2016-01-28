@@ -1,3 +1,4 @@
+import Cocoa    // this is an OSX Playground
 /*:
 # Welcome!
 

@@ -38,7 +38,9 @@ Just open the playground file of your OS of choice and enjoy.  OSX most detaild.
 
 ### REPL
 
-CAVEAT: you still have to `import Prime` in REPL.
+just `make repl`.
+
+#### CAVEAT: you still have to `import Prime` in REPL.
 
 ````shell
   1> 42.isPrime

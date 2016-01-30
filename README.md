@@ -32,6 +32,10 @@ Just add [prime.swift] to it.
 
 [prime.swift]: prime/prime.swift
 
+### Workspace
+
+Browse all the playgrounds and the project via `Prime.xcworkspace`.
+
 ### Playground
 
 Just open the playground file of your OS of choice and enjoy.  OSX most detaild.  iOS and tvOS just for testing purpurse.

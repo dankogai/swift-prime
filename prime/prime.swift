@@ -68,8 +68,7 @@ public extension UInt {
     public static func isqrt(n:UInt)->UInt {
         if n == 0 { return 0 }
         if n == 1 { return 1 }
-        if n == 18446744073709551615 { return 4294967295 }
-        var xk = n
+        var xk = UInt((sqrt(Double(n))))
         repeat {
             let xk1 = (xk + n / xk) / 2
             if xk1 >= xk { return xk }

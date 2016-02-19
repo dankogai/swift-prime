@@ -66,8 +66,6 @@ public extension UInt {
     }
     /// Integer Square Root of `n`
     public static func isqrt(n:UInt)->UInt {
-        if n == 0 { return 0 }
-        if n == 1 { return 1 }
         var xk = UInt((sqrt(Double(n))))
         repeat {
             let xk1 = (xk + n / xk) / 2

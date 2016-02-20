@@ -6,6 +6,13 @@
 //  Copyright (c) 2014-2016 Dan Kogai. All rights reserved.
 //
 //
+
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
+
 public extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.

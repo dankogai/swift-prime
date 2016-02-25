@@ -73,7 +73,7 @@ public extension UInt {
     }
     /// Integer Square Root of `n`
     public static func isqrt(n:UInt)->UInt {
-        var xk = UInt((sqrt(Double(n))))
+        var xk = UInt(sqrt(Double(n)))
         if xk <= 67108864 { return (xk)}  //sqrt(2^52)
         repeat {
             let xk1 = (xk + n / xk) / 2

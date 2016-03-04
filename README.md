@@ -1,3 +1,13 @@
+# OBSOLETED BY
+
+[PONS], Protocol-Oriented Number System in Pure Swift. 
+
+* https://github.com/dankogai/swift-pons
+
+It has all functionality of swift-prime plus `BigInt` support.
+
+[PONS]: https://github.com/dankogai/swift-pons
+
 [![build status](https://secure.travis-ci.org/dankogai/swift-prime.png)](http://travis-ci.org/dankogai/swift-prime)
 
 # swift-prime

@@ -6,6 +6,13 @@
 //  Copyright (c) 2014-2016 Dan Kogai. All rights reserved.
 //
 //
+
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
+
 public extension UInt64 {
     /// (x * y) mod m
     /// unlike naive x * y % m, this does not overflow.
@@ -66,10 +73,8 @@ public extension UInt {
     }
     /// Integer Square Root of `n`
     public static func isqrt(n:UInt)->UInt {
-        if n == 0 { return 0 }
-        if n == 1 { return 1 }
-        if n == 18446744073709551615 { return 4294967295 }
-        var xk = n
+        var xk = UInt(sqrt(Double(n)))
+        if xk <= 67108864 { return (xk)}  //sqrt(2^52)
         repeat {
             let xk1 = (xk + n / xk) / 2
             if xk1 >= xk { return xk }
